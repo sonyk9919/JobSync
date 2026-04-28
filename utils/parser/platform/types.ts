@@ -2,10 +2,9 @@ import z from "zod";
 
 const BaseJobSchema = z.object({
     "@type": z.literal('JobPosting'),
-    title: z.string(),
-    validThrough: z.string(),
-    employmentType: z.string(),
-    experienceRequirements: z.string(),
+    validThrough: z.string().optional(),
+    employmentType: z.string().optional(),
+    experienceRequirements: z.string().optional(),
     hiringOrganization: z.object({ name: z.string() }),
     url: z.string(),
 })

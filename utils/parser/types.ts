@@ -25,7 +25,7 @@ export enum EducationType {
 
 export interface ParsedJob {
     company: string;
-    dueDate: Date;
+    dueDate: Date | null;
     educationType: EducationType;
     employmentType: EmploymentType;
     careerRequirements: CareerType;

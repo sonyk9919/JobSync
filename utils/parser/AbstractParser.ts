@@ -1,7 +1,8 @@
 import { ParsedJob } from "./types";
 
 abstract class AbstractParser {
-    protected normalizeDate(value: string): Date {
+    protected normalizeDate(value?: string): Date | null{
+        if (!value) return null;
         const normalized = value.replace(/\./g, '-').split('T')[0];
         const date = new Date(normalized);
         if (isNaN(date.getTime())) {

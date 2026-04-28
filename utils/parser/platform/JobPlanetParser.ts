@@ -3,7 +3,7 @@ import { CareerType, EducationType, EmploymentType, ParsedJob } from "../types";
 import { JobPlanetSchema, ParsedJobPlanet } from "./types";
 
 class JobplanetParser extends AbstractParser {
-    private LevelMap: Record<number, EducationType> = {
+    private readonly LevelMap: Record<number, EducationType> = {
         3: EducationType.HIGH_SCHOOL,
         4: EducationType.ASSOCIATE,
         5: EducationType.BACHELOR,
@@ -53,13 +53,15 @@ class JobplanetParser extends AbstractParser {
         return this.LevelMap[Number(match[1])] ?? EducationType.UNKNOWN;
     }
 
-    private normalizeEmploymentType(value: string): EmploymentType {
+    private normalizeEmploymentType(value?: string): EmploymentType {
+        if (!value) return EmploymentType.UNKNOWN;
         if (value.includes('FULL_TIME')) return EmploymentType.FULL_TIME;
         if (value.includes('CONTRACTOR')) return EmploymentType.CONTRACT;
         return EmploymentType.UNKNOWN;
     }
 
-    private normalizeCareerType(value: string): CareerType {
+    private normalizeCareerType(value?: string): CareerType {
+        if (!value) return CareerType.UNKNOWN;
         if ((value.includes('신입') && value.includes('경력')) || value.includes('경력무관')) return CareerType.ANY;
         if (value.includes('경력')) return CareerType.EXPERIENCED;
         if (value.includes('신입')) return CareerType.NEW;
