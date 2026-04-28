@@ -13,5 +13,7 @@ const BaseJobSchema = z.object({
 export const JobKoreaSchema = BaseJobSchema.extend({
     educationRequirements: z.string(),
 });
-
 export type ParsedJobKorea = z.infer<typeof JobKoreaSchema>;
+
+export const JobPlanetSchema = BaseJobSchema.extend({});
+export type ParsedJobPlanet = z.infer<typeof JobPlanetSchema>;
