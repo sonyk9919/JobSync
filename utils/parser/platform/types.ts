@@ -16,3 +16,8 @@ export type ParsedJobKorea = z.infer<typeof JobKoreaSchema>;
 
 export const JobPlanetSchema = BaseJobSchema.extend({});
 export type ParsedJobPlanet = z.infer<typeof JobPlanetSchema>;
+
+export const WantedSchema = BaseJobSchema.extend({
+    experienceRequirements: z.array(z.string()).optional(),
+})
+export type ParsedWanted = z.infer<typeof WantedSchema>;

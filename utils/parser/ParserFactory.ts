@@ -1,12 +1,14 @@
 import AbstractParser from "./AbstractParser";
 import JobKoreaParser from "./platform/JobKoreaParser";
 import JobPlanetParser from "./platform/JobPlanetParser";
+import WantedParser from "./platform/WantedParser";
 import { ParsedJob } from "./types";
 
 class ParserFactory {
     private parsers: AbstractParser[] = [
         new JobKoreaParser(),
         new JobPlanetParser(),
+        new WantedParser(),
     ];
 
     public parse(document: Document): ParsedJob {

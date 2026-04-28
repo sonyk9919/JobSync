@@ -1,6 +1,7 @@
 export enum EmploymentType {
   FULL_TIME = '정규직',
   CONTRACT = '계약직',
+  INTERN = "인턴",
   UNKNOWN = '알 수 없음'
 }
 
