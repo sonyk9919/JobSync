@@ -12,10 +12,21 @@ export enum CareerType {
   UNKNOWN = '알 수 없음'
 }
 
+export enum EducationType {
+    ANY = '학력무관',
+    HIGH_SCHOOL = '고등학교 졸업',
+    ASSOCIATE = '초대졸',
+    BACHELOR = '대졸',
+    GRADUATE = '대학원졸업',
+    MASTER = '석사',
+    DOCTOR = '박사',
+    UNKNOWN = '알 수 없음',
+}
+
 export interface ParsedJob {
-    position: string;
     company: string;
     dueDate: Date;
+    educationType: EducationType;
     employmentType: EmploymentType;
     careerRequirements: CareerType;
     url: string;
