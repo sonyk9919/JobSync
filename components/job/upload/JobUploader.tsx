@@ -75,8 +75,8 @@ const JobUploader = ({ handleUpload }: Props) => {
     };
 
     return (
-        <div onDragOver={handleDragOver} onDrop={handleDrop} onDragLeave={handleDragLeave} onClick={handleClick} className={cn("border-2 rounded-2xl md:w-3xl h-80 border-gray-100 border-dashed overflow-hidden hover:border-blue-100 duration-200 cursor-pointer", isDragIn && isValid && 'border-blue-100', isDragIn && !isValid && 'border-red-50')}>
-            <div className="bg-gray-50 w-full h-full flex flex-col items-center justify-center gap-2">
+        <div onDragOver={handleDragOver} onDrop={handleDrop} onDragLeave={handleDragLeave} onClick={handleClick} className={cn("p-4 bg-gray-50 border-2 rounded-2xl md:w-3xl shrink-0 md:h-70 w-full h-50 border-gray-100 border-dashed overflow-hidden hover:border-blue-100 duration-200 cursor-pointer", isDragIn && isValid && 'border-blue-100', isDragIn && !isValid && 'border-red-50')}>
+            <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                 <div className="rounded-lg p-2 bg-blue-600">
                     <Upload className="text-blue-100"/>
                 </div>
