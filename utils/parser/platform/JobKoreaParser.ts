@@ -10,7 +10,7 @@ class JobKoreaParser extends AbstractParser {
     }
 
     public parse(document: Document): ParsedJob {
-        const result = this.getJsonLd(document);
+        const result = this.parsedJsonLd<ParsedJobKorea>(document, JobKoreaSchema);
         return {
             employmentType: this.normalizeEmploymentType(result.employmentType),
             careerRequirements: this.normalizeCareerType(result.experienceRequirements),
@@ -20,21 +20,7 @@ class JobKoreaParser extends AbstractParser {
             dueDate: this.normalizeDate(result.validThrough),
         }
     }
-
-    private getJsonLd(document: Document): ParsedJobKorea {
-        const scripts = document.querySelectorAll('script[type="application/ld+json"]');
-        for (const script of scripts) {
-            try {
-                const json = JSON.parse(script.textContent ?? '');
-                const result = JobKoreaSchema.safeParse(json);
-                if (result.success) return result.data;
-            } catch (e) {
-                console.error("파싱 중 오류가 발생했습니다.", e);
-            }
-        }
-        throw new Error('JobPosting JSON-LD를 찾을 수 없습니다.');
-    }
-
+    
     private normalizeEmploymentType(value?: string): EmploymentType {
         if (!value) return EmploymentType.UNKNOWN;
         if (value.includes('FULL_TIME')) return EmploymentType.FULL_TIME;

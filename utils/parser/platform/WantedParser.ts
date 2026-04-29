@@ -9,7 +9,7 @@ class WantedParser extends AbstractParser {
     }
 
     public parse(document: Document): ParsedJob {
-        const result = this.getJsonLd(document);
+        const result = this.parsedJsonLd<ParsedWanted>(document, WantedSchema);
 
         return {
             company: result.hiringOrganization.name,
@@ -19,20 +19,6 @@ class WantedParser extends AbstractParser {
             educationType: EducationType.UNKNOWN,
             url: result.url,
         };
-    }
-
-    private getJsonLd(document: Document): ParsedWanted {
-        const scripts = document.querySelectorAll('script[type="application/ld+json"]');
-        for (const script of scripts) {
-            try {
-                const json = JSON.parse(script.textContent ?? '');
-                const result = WantedSchema.safeParse(json);
-                if (result.success) return result.data;
-            } catch (e) {
-                console.error("파싱 중 오류가 발생했습니다.", e);
-            }
-        }
-        throw new Error('JobPosting JSON-LD를 찾을 수 없습니다.');
     }
 
     private normalizeEmploymentType(value?: string): EmploymentType {
