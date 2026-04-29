@@ -9,9 +9,9 @@ interface Props {
 const JobCard = ({ job, onAddCalendar }: Props) => {
     const getCompanyInitial = (company: string) => {
         return company
-            .replace(/^[\s㈜㈔㈏㈋]+/, '')
-            .replace(/^[\(\[（【][^가-힣a-zA-Z]*[\)\]）】]/, '')
-            .replace(/^(주식회사|유한회사|합자회사|합명회사|사회적협동조합|협동조합)\s*/, '')
+            .replace(/[\(\[（【].*?[\)\]）】]/g, '')
+            .replace(/[\s㈜㈔㈏㈋]+/g, '')
+            .replace(/(주식회사|유한회사|합자회사|합명회사|사회적협동조합|협동조합)/g, '')
             .trim()[0] ?? '?';
     };
 
