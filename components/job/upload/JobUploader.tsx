@@ -5,12 +5,13 @@ import parserFactory from "@/utils/parser/ParserFactory";
 import { ParsedJob } from "@/utils/parser/types";
 import { Upload } from "lucide-react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface Props {
-    handleResult: (job: ParsedJob) => void;
+    handleUpload: (job: ParsedJob) => void;
 }
 
-const JobUploader = ({ handleResult }: Props) => {
+const JobUploader = ({ handleUpload }: Props) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isValid, setIsValid] = useState(true);
     const [isDragIn, setIsDragIn] = useState(false);
@@ -33,8 +34,16 @@ const JobUploader = ({ handleResult }: Props) => {
             if (typeof fileReader.result !== 'string') return;
             const parser = new DOMParser();
             const document = parser.parseFromString(fileReader.result, 'text/html');
-            const result = parserFactory.parse(document);
-            handleResult(result);
+            try {
+                const result = parserFactory.parse(document);
+                handleUpload(result);
+            } catch (e) {
+                if (e instanceof Error) {
+                    toast.error(e.message);
+                    return;
+                }
+                toast.error('공고를 불러오는 중 오류가 발생했어요.');
+            }
         };
     }
 
