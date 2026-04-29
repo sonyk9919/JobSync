@@ -12,6 +12,7 @@ class WantedParser extends AbstractParser {
         const result = this.parsedJsonLd<ParsedWanted>(document, WantedSchema);
 
         return {
+            title: result.title,
             company: result.hiringOrganization.name,
             dueDate: this.normalizeDate(result.validThrough),
             employmentType: this.normalizeEmploymentType(result.employmentType),

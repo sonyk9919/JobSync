@@ -12,6 +12,7 @@ class JobKoreaParser extends AbstractParser {
     public parse(document: Document): ParsedJob {
         const result = this.parsedJsonLd<ParsedJobKorea>(document, JobKoreaSchema);
         return {
+            title: result.title,
             employmentType: this.normalizeEmploymentType(result.employmentType),
             careerRequirements: this.normalizeCareerType(result.experienceRequirements),
             educationType: this.normalizeEducationType(result.educationRequirements),
@@ -20,7 +21,7 @@ class JobKoreaParser extends AbstractParser {
             dueDate: this.normalizeDate(result.validThrough),
         }
     }
-    
+
     private normalizeEmploymentType(value?: string): EmploymentType {
         if (!value) return EmploymentType.UNKNOWN;
         if (value.includes('FULL_TIME')) return EmploymentType.FULL_TIME;

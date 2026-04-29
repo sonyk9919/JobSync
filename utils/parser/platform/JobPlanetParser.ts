@@ -23,6 +23,7 @@ class JobplanetParser extends AbstractParser {
     public parse(document: Document): ParsedJob {
         const result = this.parsedJsonLd<ParsedJobPlanet>(document, JobPlanetSchema);
         return {
+            title: result.title,
             company: result.hiringOrganization.name,
             dueDate: this.normalizeDate(result.validThrough),
             employmentType: this.normalizeEmploymentType(result.employmentType),
