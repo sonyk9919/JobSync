@@ -19,6 +19,7 @@ class WantedParser extends AbstractParser {
             careerRequirements: this.normalizeCareerType(result.experienceRequirements),
             educationType: EducationType.UNKNOWN,
             url: result.url,
+            address: [result.jobLocation.address.addressRegion, result.jobLocation.address.addressLocality].join(" "),
         };
     }
 

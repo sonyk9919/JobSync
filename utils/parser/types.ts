@@ -31,5 +31,6 @@ export interface ParsedJob {
     educationType: EducationType;
     employmentType: EmploymentType;
     careerRequirements: CareerType;
+    address: string;
     url: string;
 }

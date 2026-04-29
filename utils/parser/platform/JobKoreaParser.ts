@@ -19,6 +19,7 @@ class JobKoreaParser extends AbstractParser {
             url: result.url,
             company: result.hiringOrganization.name,
             dueDate: this.normalizeDate(result.validThrough),
+            address: result.jobLocation.address.streetAddress
         }
     }
 

@@ -30,6 +30,7 @@ class JobplanetParser extends AbstractParser {
             careerRequirements: this.normalizeCareerType(result.experienceRequirements),
             educationType: this.parseEducationType(document),
             url: result.url,
+            address: result.jobLocation.address.addressRegion
         };
     }
 
