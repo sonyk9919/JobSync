@@ -3,13 +3,13 @@ import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTitle } from 
 import JobCalendarForm from "./JobCalendarForm";
 
 const JobCalendarModal = () => {
-    const { form, initForm } = useJobCalendarModal();
+    const { job, setJob } = useJobCalendarModal();
 
     return (
-        <Dialog open={form !== null}>
+        <Dialog open={job !== null}>
             <DialogPortal>
                 <DialogOverlay
-                    onClick={() => initForm(null)}
+                    onClick={() => setJob(null)}
                     className="fixed inset-0 bg-black/40"
                 />
                 <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 w-full max-w-md z-50 flex flex-col gap-4">
