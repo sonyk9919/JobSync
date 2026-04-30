@@ -14,7 +14,7 @@ class ParserFactory {
     public parse(document: Document): ParsedJob {
         const parser = this.parsers.find((parser) => parser.isSupport(document));
         if (!parser)
-            throw new Error('지원하지 않는 플랫폼이에요. (잡코리아, 사람인, 원티드만 지원해요.)');
+            throw new Error('지원하지 않는 플랫폼이에요. (잡코리아, 잡플래닛, 원티드만 지원해요.)');
         return parser.parse(document);
     }
 }
