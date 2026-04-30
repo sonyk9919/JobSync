@@ -22,6 +22,33 @@ class DateUtils {
     public static isPast(date: string, value: number, unit: ReminderUnit): boolean {
         return this.getAlertDate(date, value, unit) < new Date();
     }
+
+    public static getDday(dueDate: Date | null): number | null {
+        if (!dueDate) return null;
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        return Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    }
+
+    public static getDdayLabel(dday: number | null): string {
+        if (dday === null) return '상시채용';
+        if (dday < 0) return '마감';
+        return `D-${dday}`;
+    }
+
+    public static getDdayBadgeStyle(dday: number | null): string {
+        if (dday === null) return 'bg-gray-50 text-gray-400';
+        if (dday <= 7) return 'bg-red-50 text-red-800';
+        if (dday <= 14) return 'bg-amber-50 text-amber-800';
+        return 'bg-blue-50 text-blue-800';
+    }
+
+    public static getDdayTextStyle(dday: number | null): string {
+        if (dday === null) return 'text-gray-400';
+        if (dday <= 7) return 'text-red-500';
+        if (dday <= 14) return 'text-amber-500';
+        return 'text-blue-400';
+    }
 }
 
 export default DateUtils;

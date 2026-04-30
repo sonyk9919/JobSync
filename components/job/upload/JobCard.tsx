@@ -1,5 +1,6 @@
 import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CareerType, EducationType, EmploymentType, ParsedJob } from '@/utils/parser/types';
+import DateUtils from '@/utils/DateUtils';
 import { Calendar } from 'lucide-react';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 
 const JobCard = ({ job, onAddCalendar }: Props) => {
     const { isRegistered } = useRegisteredJobs();
+
     const getCompanyInitial = (company: string) => {
         return (
             company
@@ -17,26 +19,6 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
                 .replace(/(주식회사|유한회사|합자회사|합명회사|사회적협동조합|협동조합)/g, '')
                 .trim()[0] ?? '?'
         );
-    };
-
-    const getDday = (dueDate: Date | null) => {
-        if (!dueDate) return null;
-        const now = new Date();
-        const diff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        return diff;
-    };
-
-    const getDdayStyle = (dday: number | null) => {
-        if (dday === null) return 'bg-gray-50 text-gray-400';
-        if (dday <= 7) return 'bg-red-50 text-red-800';
-        if (dday <= 14) return 'bg-amber-50 text-amber-800';
-        return 'bg-blue-50 text-blue-800';
-    };
-
-    const getDdayLabel = (dday: number | null) => {
-        if (dday === null) return '상시채용';
-        if (dday < 0) return '마감';
-        return `D-${dday}`;
     };
 
     const formatDate = (date: Date | null) => {
@@ -52,7 +34,7 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
         return address.split(' ').slice(0, 2).join(' ');
     };
 
-    const dday = getDday(job.dueDate);
+    const dday = DateUtils.getDday(job.dueDate);
 
     const onOpenUrl = () => window.open(job.url, '_blank', 'noopener,noreferrer');
     const onClickAddCalendar = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -78,9 +60,9 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
                     </div>
                 </div>
                 <span
-                    className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${getDdayStyle(dday)}`}
+                    className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${DateUtils.getDdayBadgeStyle(dday)}`}
                 >
-                    {getDdayLabel(dday)}
+                    {DateUtils.getDdayLabel(dday)}
                 </span>
             </div>
 
