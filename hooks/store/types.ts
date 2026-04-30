@@ -12,3 +12,10 @@ export interface AccessToken {
     logout: () => void;
     isLoggedIn: () => boolean;
 }
+
+export interface RegisteredJobs {
+    registeredUrls: string[];
+    register: (url: string) => void;
+    unregister: (url: string) => void;
+    isRegistered: (url: string) => boolean;
+}

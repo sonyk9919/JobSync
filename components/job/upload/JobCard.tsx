@@ -1,3 +1,4 @@
+import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CareerType, EducationType, EmploymentType, ParsedJob } from '@/utils/parser/types';
 import { Calendar } from 'lucide-react';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const JobCard = ({ job, onAddCalendar }: Props) => {
+    const { isRegistered } = useRegisteredJobs();
     const getCompanyInitial = (company: string) => {
         return (
             company
@@ -108,13 +110,21 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
                     마감{' '}
                     <span className="text-gray-800 font-medium">{formatDate(job.dueDate)}</span>
                 </span>
-                <button
-                    onClick={onClickAddCalendar}
-                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-400 text-blue-400 hover:bg-blue-50 duration-150"
-                >
-                    <Calendar className="size-4" />
-                    캘린더 추가
-                </button>
+                <div className="flex items-center gap-2">
+                    {isRegistered(job.url) && (
+                        <span className="text-xs text-blue-400 flex items-center gap-1">
+                            <Calendar className="size-3" />
+                            등록됨
+                        </span>
+                    )}
+                    <button
+                        onClick={onClickAddCalendar}
+                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-400 text-blue-400 hover:bg-blue-50 duration-150"
+                    >
+                        <Calendar className="size-4" />
+                        캘린더 추가
+                    </button>
+                </div>
             </div>
         </div>
     );

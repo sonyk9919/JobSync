@@ -2,16 +2,19 @@ import Button from '@/components/common/Button';
 import FormField from '@/components/common/FormField';
 import useGoogleCalendar from '@/hooks/calendar/useGoogleCalendar';
 import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
+import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CalendarForm, ReminderUnit } from '@/types/calendar';
 import DateUtils from '@/utils/DateUtils';
-import { Plus, X } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { Loader2, Plus, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 const JobCalendarForm = () => {
     const { addEvent } = useGoogleCalendar();
+    const { register: registerJob } = useRegisteredJobs();
     const reminderListRef = useRef<HTMLDivElement>(null);
     const { job, setJob } = useJobCalendarModal();
+    const [isLoading, setIsLoading] = useState(false);
 
     const { register, handleSubmit, reset, control } = useForm<CalendarForm>({
         defaultValues: {
@@ -30,17 +33,6 @@ const JobCalendarForm = () => {
     const date = useWatch({ control, name: 'date' });
     const reminders = useWatch({ control, name: 'reminders' });
 
-    useEffect(() => {
-        if (!job) return;
-        reset({
-            title: `${job.company} - ${job.title}`,
-            date:
-                job.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0],
-            reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
-            memo: job.url,
-        });
-    }, [job, reset]);
-
     const handleAddReminder = () => {
         append({ value: 1, unit: ReminderUnit.DAYS });
         setTimeout(() => {
@@ -51,6 +43,28 @@ const JobCalendarForm = () => {
             });
         }, 0);
     };
+    const onSubmit = async (form: CalendarForm) => {
+        if (!job) return;
+        setIsLoading(true);
+        try {
+            await addEvent(form);
+            registerJob(job.url);
+            setJob(null);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!job) return;
+        reset({
+            title: `${job.company} - ${job.title}`,
+            date:
+                job.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0],
+            reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
+            memo: job.url,
+        });
+    }, [job, reset]);
 
     return (
         <div className="flex flex-col gap-2">
@@ -149,8 +163,8 @@ const JobCalendarForm = () => {
                 <Button variant="secondary" onClick={() => setJob(null)}>
                     취소
                 </Button>
-                <Button variant="primary" onClick={handleSubmit(addEvent)}>
-                    추가
+                <Button variant="primary" disabled={isLoading} onClick={handleSubmit(onSubmit)}>
+                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : '추가'}
                 </Button>
             </div>
         </div>
