@@ -3,14 +3,16 @@ import FormField from '@/components/common/FormField';
 import useGoogleCalendar from '@/hooks/calendar/useGoogleCalendar';
 import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
 import { CalendarForm, ReminderUnit } from '@/types/calendar';
+import DateUtils from '@/utils/DateUtils';
 import { Plus, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 const JobCalendarForm = () => {
     const { addEvent } = useGoogleCalendar();
     const reminderListRef = useRef<HTMLDivElement>(null);
     const { job, setJob } = useJobCalendarModal();
+
     const { register, handleSubmit, reset, control } = useForm<CalendarForm>({
         defaultValues: {
             title: '',
@@ -19,14 +21,14 @@ const JobCalendarForm = () => {
             memo: '',
         },
     });
+
     const { fields, append, remove } = useFieldArray({
         name: 'reminders',
         control,
     });
 
-    const handleAddReminder = () => {
-        append({ value: 1, unit: ReminderUnit.DAYS });
-    };
+    const date = useWatch({ control, name: 'date' });
+    const reminders = useWatch({ control, name: 'reminders' });
 
     useEffect(() => {
         if (!job) return;
@@ -38,6 +40,17 @@ const JobCalendarForm = () => {
             memo: job.url,
         });
     }, [job, reset]);
+
+    const handleAddReminder = () => {
+        append({ value: 1, unit: ReminderUnit.DAYS });
+        setTimeout(() => {
+            if (!reminderListRef.current) return;
+            reminderListRef.current.scrollTo({
+                top: reminderListRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }, 0);
+    };
 
     return (
         <div className="flex flex-col gap-2">
@@ -68,31 +81,60 @@ const JobCalendarForm = () => {
                         className="flex flex-col gap-2 max-h-36 overflow-y-auto scrollbar-hide"
                     >
                         {fields.map((field, idx) => (
-                            <div key={field.id} className="flex gap-2 items-center">
-                                <div className="text-xs text-gray-400 w-5 h-5 shrink-0 border border-gray-100 rounded-full flex items-center justify-center">
-                                    {idx + 1}
-                                </div>
-                                <FormField.Input
-                                    type="number"
-                                    min={1}
-                                    className="w-20"
-                                    {...register(`reminders.${idx}.value`, { valueAsNumber: true })}
-                                />
-                                <select
-                                    className="bg-gray-100 text-sm border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400 text-gray-900 flex-1"
-                                    {...register(`reminders.${idx}.unit`)}
-                                >
-                                    <option value={ReminderUnit.MINUTES}>분 전</option>
-                                    <option value={ReminderUnit.HOURS}>시간 전</option>
-                                    <option value={ReminderUnit.DAYS}>일 전</option>
-                                </select>
-                                {fields.length > 1 && (
-                                    <button
-                                        onClick={() => remove(idx)}
-                                        className="text-gray-200 hover:text-red-600 duration-150"
+                            <div key={field.id} className="flex flex-col gap-1">
+                                <div className="flex gap-2 items-center">
+                                    <div className="text-xs text-gray-400 w-5 h-5 shrink-0 border border-gray-100 rounded-full flex items-center justify-center">
+                                        {idx + 1}
+                                    </div>
+                                    <FormField.Input
+                                        type="number"
+                                        min={1}
+                                        className="w-20"
+                                        {...register(`reminders.${idx}.value`, {
+                                            valueAsNumber: true,
+                                        })}
+                                    />
+                                    <select
+                                        className="bg-gray-100 text-sm border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400 text-gray-900 flex-1"
+                                        {...register(`reminders.${idx}.unit`)}
                                     >
-                                        <X className="size-4" />
-                                    </button>
+                                        <option value={ReminderUnit.MINUTES}>분 전</option>
+                                        <option value={ReminderUnit.HOURS}>시간 전</option>
+                                        <option value={ReminderUnit.DAYS}>일 전</option>
+                                    </select>
+                                    {fields.length > 1 && (
+                                        <button
+                                            onClick={() => remove(idx)}
+                                            className="text-gray-200 hover:text-red-600 duration-150"
+                                        >
+                                            <X className="size-4" />
+                                        </button>
+                                    )}
+                                </div>
+                                {date && reminders[idx] && (
+                                    <span
+                                        className={`text-xs pl-7 ${
+                                            DateUtils.isPast(
+                                                date,
+                                                reminders[idx].value,
+                                                reminders[idx].unit
+                                            )
+                                                ? 'text-red-400'
+                                                : 'text-gray-300'
+                                        }`}
+                                    >
+                                        {DateUtils.getAlertTime(
+                                            date,
+                                            reminders[idx].value,
+                                            reminders[idx].unit
+                                        )}
+                                        에 알림
+                                        {DateUtils.isPast(
+                                            date,
+                                            reminders[idx].value,
+                                            reminders[idx].unit
+                                        ) && ' · 이미 지난 시간이에요'}
+                                    </span>
                                 )}
                             </div>
                         ))}

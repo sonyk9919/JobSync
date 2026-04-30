@@ -2,6 +2,7 @@ import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogOverlay,
     DialogPortal,
     DialogTitle,
@@ -23,6 +24,7 @@ const JobCalendarModal = () => {
                     <DialogTitle className="text-base font-medium text-gray-900">
                         구글 캘린더에 추가
                     </DialogTitle>
+                    <DialogDescription></DialogDescription>
                     {isLoggedIn() ? (
                         <JobCalendarForm />
                     ) : (
