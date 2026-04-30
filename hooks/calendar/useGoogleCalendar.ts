@@ -1,4 +1,13 @@
-import { CalendarForm, ReminderUnit } from '@/types/calendar';
+import {
+    CalendarCreateBody,
+    CalendarCreateSchema,
+    CalendarForm,
+    CalendarListSchema,
+    EventBody,
+    EventCreateSchema,
+    ReminderMethod,
+    ReminderUnit,
+} from '@/types/calendar';
 import useAccessToken from '../store/useAccessToken';
 import { toast } from 'sonner';
 import { ParsedJob } from '@/utils/parser/types';
@@ -20,57 +29,68 @@ const useGoogleCalendar = () => {
         });
         if (!listRes.ok) throw new Error(`캘린더 목록 조회 실패 (${listRes.status})`);
 
-        const data = await listRes.json();
-        const existing = data.items?.find(
-            (c: { summary: string; id: string }) => c.summary === CALENDAR_NAME
-        );
+        const data = CalendarListSchema.parse(await listRes.json());
+        const existing = data.items?.find((c) => c.summary === CALENDAR_NAME);
         if (existing) return existing.id;
 
+        const body: CalendarCreateBody = { summary: CALENDAR_NAME };
         const createRes = await fetch(`${CALENDAR_API}/calendars`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ summary: CALENDAR_NAME }),
+            body: JSON.stringify(body),
         });
         if (!createRes.ok) throw new Error(`캘린더 생성 실패 (${createRes.status})`);
 
-        const calendar = await createRes.json();
-        if (!calendar.id) throw new Error('캘린더 ID를 받아오지 못했어요.');
-
+        const calendar = CalendarCreateSchema.parse(await createRes.json());
         return calendar.id;
     };
 
     const toMinutes = (value: number, unit: ReminderUnit): number => {
         if (unit === ReminderUnit.MINUTES) return value;
         if (unit === ReminderUnit.HOURS) return value * 60;
-        if (unit === ReminderUnit.DAYS) return value * 60 * 24;
-        return value;
+        return value * 60 * 24;
     };
+
+    const buildEventBody = (
+        summary: string,
+        date: string,
+        description: string,
+        overrides: { method: ReminderMethod; minutes: number }[]
+    ): EventBody => ({
+        summary,
+        start: { date },
+        end: { date },
+        description,
+        reminders: {
+            useDefault: false,
+            overrides,
+        },
+    });
 
     const addEvent = async (form: CalendarForm): Promise<void> => {
         try {
             const calendarId = await getOrCreateCalendar();
+            const body = buildEventBody(
+                form.title,
+                form.date,
+                form.memo,
+                form.reminders.map((r) => ({
+                    method: ReminderMethod.POPUP,
+                    minutes: toMinutes(r.value, r.unit),
+                }))
+            );
+
             const eventRes = await fetch(
                 `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events`,
                 {
                     method: 'POST',
                     headers: getHeaders(),
-                    body: JSON.stringify({
-                        summary: form.title,
-                        start: { date: form.date },
-                        end: { date: form.date },
-                        description: form.memo,
-                        reminders: {
-                            useDefault: false,
-                            overrides: form.reminders.map((r) => ({
-                                method: 'popup',
-                                minutes: toMinutes(r.value, r.unit),
-                            })),
-                        },
-                    }),
+                    body: JSON.stringify(body),
                 }
             );
             if (!eventRes.ok) throw new Error(`이벤트 추가 실패 (${eventRes.status})`);
 
+            EventCreateSchema.parse(await eventRes.json());
             toast.success('캘린더에 추가됐어요.');
         } catch (err) {
             toast.error(err instanceof Error ? err.message : '캘린더 추가 중 오류가 발생했어요.');
@@ -94,25 +114,21 @@ const useGoogleCalendar = () => {
             const results = await Promise.allSettled(
                 closedJobs.map(async (job) => {
                     const date = job.dueDate!.toISOString().split('T')[0];
+                    const body = buildEventBody(`${job.company} - ${job.title}`, date, job.url, [
+                        { method: ReminderMethod.POPUP, minutes: 60 * 24 },
+                    ]);
+
                     const res = await fetch(
                         `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events`,
                         {
                             method: 'POST',
                             headers: getHeaders(),
-                            body: JSON.stringify({
-                                summary: `${job.company} - ${job.title}`,
-                                start: { date },
-                                end: { date },
-                                description: job.url,
-                                reminders: {
-                                    useDefault: false,
-                                    overrides: [{ method: 'popup', minutes: 60 * 24 }],
-                                },
-                            }),
+                            body: JSON.stringify(body),
                         }
                     );
                     if (!res.ok)
                         throw new Error(`캘린더 추가 중 오류가 발생했어요. (${res.status})`);
+                    EventCreateSchema.parse(await res.json());
                 })
             );
 
