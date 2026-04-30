@@ -1,6 +1,6 @@
-import AbstractParser from "../AbstractParser";
-import { CareerType, EducationType, EmploymentType, ParsedJob } from "../types";
-import { JobPlanetSchema, ParsedJobPlanet } from "./types";
+import AbstractParser from '../AbstractParser';
+import { CareerType, EducationType, EmploymentType, ParsedJob } from '../types';
+import { JobPlanetSchema, ParsedJobPlanet } from './types';
 
 class JobplanetParser extends AbstractParser {
     private readonly LevelMap: Record<number, EducationType> = {
@@ -14,9 +14,7 @@ class JobplanetParser extends AbstractParser {
     };
 
     public isSupport(document: Document): boolean {
-        const content = document
-            .querySelector('meta[property="og:url"]')
-            ?.getAttribute('content');
+        const content = document.querySelector('meta[property="og:url"]')?.getAttribute('content');
         return content?.includes('jobplanet.co.kr') ?? false;
     }
 
@@ -30,13 +28,12 @@ class JobplanetParser extends AbstractParser {
             careerRequirements: this.normalizeCareerType(result.experienceRequirements),
             educationType: this.parseEducationType(document),
             url: result.url,
-            address: result.jobLocation.address.addressRegion
+            address: result.jobLocation.address.addressRegion,
         };
     }
 
     private parseEducationType(document: Document): EducationType {
-        const match = document.documentElement.innerHTML
-            .match(/"education_level_id":(\d+)/);
+        const match = document.documentElement.innerHTML.match(/"education_level_id":(\d+)/);
         if (!match) return EducationType.UNKNOWN;
         return this.LevelMap[Number(match[1])] ?? EducationType.UNKNOWN;
     }
@@ -50,7 +47,8 @@ class JobplanetParser extends AbstractParser {
 
     private normalizeCareerType(value?: string): CareerType {
         if (!value) return CareerType.UNKNOWN;
-        if ((value.includes('신입') && value.includes('경력')) || value.includes('경력무관')) return CareerType.ANY;
+        if ((value.includes('신입') && value.includes('경력')) || value.includes('경력무관'))
+            return CareerType.ANY;
         if (value.includes('경력')) return CareerType.EXPERIENCED;
         if (value.includes('신입')) return CareerType.NEW;
         return CareerType.UNKNOWN;

@@ -1,9 +1,9 @@
-import Button from "@/components/common/Button";
-import FormField from "@/components/common/FormField";
-import useJobCalendarModal from "@/hooks/store/useJobCalendarModal";
-import { Plus, X } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import Button from '@/components/common/Button';
+import FormField from '@/components/common/FormField';
+import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
+import { Plus, X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 interface CalendarForm {
     title: string;
@@ -27,7 +27,7 @@ const JobCalendarForm = () => {
             date: '',
             reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
             memo: '',
-        }
+        },
     });
     const { fields, append, remove } = useFieldArray({
         name: 'reminders',
@@ -36,30 +36,27 @@ const JobCalendarForm = () => {
 
     const handleAddReminder = () => {
         append({ value: 1, unit: ReminderUnit.DAYS });
-    }
+    };
     const onSubmit = (data: CalendarForm) => {
         console.log(data);
     };
-
 
     useEffect(() => {
         if (!job) return;
         reset({
             title: `${job.company} - ${job.title}`,
-            date: job.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0],
+            date:
+                job.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0],
             reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
             memo: job.url,
         });
-    }, [job]);
+    }, [job, reset]);
 
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-3">
                 <FormField label="일정 제목">
-                    <FormField.Input
-                        type="text"
-                        {...register('title')}
-                    />
+                    <FormField.Input type="text" {...register('title')} />
                 </FormField>
                 <FormField label="마감일">
                     <FormField.Input
@@ -79,10 +76,15 @@ const JobCalendarForm = () => {
                             추가
                         </button>
                     </div>
-                    <div ref={reminderListRef} className="flex flex-col gap-2 max-h-36 overflow-y-auto scrollbar-hide">
+                    <div
+                        ref={reminderListRef}
+                        className="flex flex-col gap-2 max-h-36 overflow-y-auto scrollbar-hide"
+                    >
                         {fields.map((field, idx) => (
                             <div key={field.id} className="flex gap-2 items-center">
-                                <div className="text-xs text-gray-400 w-5 h-5 shrink-0 border border-gray-100 rounded-full flex items-center justify-center">{idx + 1}</div>
+                                <div className="text-xs text-gray-400 w-5 h-5 shrink-0 border border-gray-100 rounded-full flex items-center justify-center">
+                                    {idx + 1}
+                                </div>
                                 <FormField.Input
                                     type="number"
                                     min={1}
@@ -110,16 +112,17 @@ const JobCalendarForm = () => {
                     </div>
                 </div>
                 <FormField label="메모">
-                    <FormField.Textarea
-                        rows={3}
-                        {...register('memo')}
-                    />
+                    <FormField.Textarea rows={3} {...register('memo')} />
                 </FormField>
             </div>
 
             <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-                <Button variant='secondary' onClick={() => setJob(null)}>취소</Button>
-                <Button variant="primary" onClick={handleSubmit(onSubmit)}>추가</Button>
+                <Button variant="secondary" onClick={() => setJob(null)}>
+                    취소
+                </Button>
+                <Button variant="primary" onClick={handleSubmit(onSubmit)}>
+                    추가
+                </Button>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
-import { CareerType, EducationType, EmploymentType, ParsedJob } from "@/utils/parser/types";
-import { Calendar } from "lucide-react";
+import { CareerType, EducationType, EmploymentType, ParsedJob } from '@/utils/parser/types';
+import { Calendar } from 'lucide-react';
 
 interface Props {
     job: ParsedJob;
@@ -8,16 +8,19 @@ interface Props {
 
 const JobCard = ({ job, onAddCalendar }: Props) => {
     const getCompanyInitial = (company: string) => {
-        return company
-            .replace(/[\(\[（【].*?[\)\]）】]/g, '')
-            .replace(/[\s㈜㈔㈏㈋]+/g, '')
-            .replace(/(주식회사|유한회사|합자회사|합명회사|사회적협동조합|협동조합)/g, '')
-            .trim()[0] ?? '?';
+        return (
+            company
+                .replace(/[\(\[（【].*?[\)\]）】]/g, '')
+                .replace(/[\s㈜㈔㈏㈋]+/g, '')
+                .replace(/(주식회사|유한회사|합자회사|합명회사|사회적협동조합|협동조합)/g, '')
+                .trim()[0] ?? '?'
+        );
     };
 
     const getDday = (dueDate: Date | null) => {
         if (!dueDate) return null;
-        const diff = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        const now = new Date();
+        const diff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
         return diff;
     };
 
@@ -36,7 +39,11 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
 
     const formatDate = (date: Date | null) => {
         if (!date) return '-';
-        return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
     };
 
     const getAddress = (address: string) => {
@@ -63,10 +70,14 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
                     </div>
                     <div className="min-w-0">
                         <div className="text-xs text-gray-400 truncate">{job.company}</div>
-                        <div className="text-sm font-medium text-gray-900 truncate">{job.title}</div>
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                            {job.title}
+                        </div>
                     </div>
                 </div>
-                <span className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${getDdayStyle(dday)}`}>
+                <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${getDdayStyle(dday)}`}
+                >
                     {getDdayLabel(dday)}
                 </span>
             </div>
@@ -94,7 +105,8 @@ const JobCard = ({ job, onAddCalendar }: Props) => {
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                 <span className="text-xs text-gray-400">
-                    마감 <span className="text-gray-800 font-medium">{formatDate(job.dueDate)}</span>
+                    마감{' '}
+                    <span className="text-gray-800 font-medium">{formatDate(job.dueDate)}</span>
                 </span>
                 <button
                     onClick={onClickAddCalendar}

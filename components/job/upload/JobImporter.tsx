@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { ParsedJob } from "@/utils/parser/types";
-import JobUploader from "./JobUploader";
-import { useState } from "react";
-import { toast } from "sonner";
-import JobList from "./JobList";
-import JobCalendarModal from "../modal/JobCalendarModal";
+import { ParsedJob } from '@/utils/parser/types';
+import JobUploader from './JobUploader';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import JobList from './JobList';
+import JobCalendarModal from '../modal/JobCalendarModal';
 
 const JobImporter = () => {
     const [jobs, setJobs] = useState<ParsedJob[]>([]);
 
     const handleUpload = (job: ParsedJob) => {
-        setJobs(prev => {
-            const already = prev.find(j => j.url === job.url);
+        setJobs((prev) => {
+            const already = prev.find((j) => j.url === job.url);
             if (already) {
                 toast.error(`"${job.company}"는 이미 등록된 공고에요.`);
                 return prev;
@@ -24,7 +24,7 @@ const JobImporter = () => {
                 if (!b.dueDate) return -1;
                 return a.dueDate.getTime() - b.dueDate.getTime();
             });
-        })
+        });
     };
 
     return (

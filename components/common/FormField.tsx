@@ -1,4 +1,4 @@
-import { cn } from "@/utils/css/tailwind";
+import { cn } from '@/utils/css/tailwind';
 
 interface Props {
     label: string;
@@ -14,15 +14,16 @@ const FormField = ({ label, children }: Props) => {
     );
 };
 
-const inputClass = "bg-gray-100 text-sm border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400 text-gray-900";
+const inputClass =
+    'bg-gray-100 text-sm border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400 text-gray-900';
 
 const Input = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
-    return <input className={cn(inputClass, className)} {...props} />
-}
+    return <input className={cn(inputClass, className)} {...props} />;
+};
 
 const Textarea = ({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
-    return <textarea className={cn(inputClass, 'resize-none', className)} {...props} />
-}
+    return <textarea className={cn(inputClass, 'resize-none', className)} {...props} />;
+};
 
 FormField.Input = Input;
 FormField.Textarea = Textarea;
