@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Job Flow',
+    title: 'JobSync',
     description: '채용공고를 캘린더로, 지원 현황을 한눈에',
 };
 
