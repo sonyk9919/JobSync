@@ -12,7 +12,11 @@ const useAccessToken = create<AccessToken>()(
             isLoggedIn: () => {
                 const { accessToken, expiredAt } = get();
                 if (!accessToken || !expiredAt) return false;
-                return Date.now() <= expiredAt;
+                if (Date.now() > expiredAt) {
+                    set({ accessToken: null, expiredAt: null });
+                    return false;
+                }
+                return true;
             },
         }),
         {

@@ -1,24 +1,14 @@
 import Button from '@/components/common/Button';
 import FormField from '@/components/common/FormField';
+import useGoogleCalendar from '@/hooks/calendar/useGoogleCalendar';
 import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
+import { CalendarForm, ReminderUnit } from '@/types/calendar';
 import { Plus, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
-interface CalendarForm {
-    title: string;
-    date: string;
-    reminders: { value: number; unit: ReminderUnit }[];
-    memo: string;
-}
-
-enum ReminderUnit {
-    MINUTES = 'minutes',
-    HOURS = 'hours',
-    DAYS = 'days',
-}
-
 const JobCalendarForm = () => {
+    const { addEvent } = useGoogleCalendar();
     const reminderListRef = useRef<HTMLDivElement>(null);
     const { job, setJob } = useJobCalendarModal();
     const { register, handleSubmit, reset, control } = useForm<CalendarForm>({
@@ -36,9 +26,6 @@ const JobCalendarForm = () => {
 
     const handleAddReminder = () => {
         append({ value: 1, unit: ReminderUnit.DAYS });
-    };
-    const onSubmit = (data: CalendarForm) => {
-        console.log(data);
     };
 
     useEffect(() => {
@@ -120,7 +107,7 @@ const JobCalendarForm = () => {
                 <Button variant="secondary" onClick={() => setJob(null)}>
                     취소
                 </Button>
-                <Button variant="primary" onClick={handleSubmit(onSubmit)}>
+                <Button variant="primary" onClick={handleSubmit(addEvent)}>
                     추가
                 </Button>
             </div>
