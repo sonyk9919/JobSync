@@ -7,7 +7,7 @@ const CALENDAR_NAME = 'JobSync';
 const CALENDAR_API = 'https://www.googleapis.com/calendar/v3';
 
 const useGoogleCalendar = () => {
-    const { accessToken, isLoggedIn } = useAccessToken();
+    const { accessToken } = useAccessToken();
 
     const getHeaders = () => ({
         Authorization: `Bearer ${accessToken}`,
@@ -15,95 +15,105 @@ const useGoogleCalendar = () => {
     });
 
     const getOrCreateCalendar = async (): Promise<string> => {
-        const response = await fetch(`${CALENDAR_API}/users/me/calendarList`, {
+        const listRes = await fetch(`${CALENDAR_API}/users/me/calendarList`, {
             headers: getHeaders(),
         });
-        const data = await response.json();
+        if (!listRes.ok) throw new Error(`캘린더 목록 조회 실패 (${listRes.status})`);
 
+        const data = await listRes.json();
         const existing = data.items?.find(
             (c: { summary: string; id: string }) => c.summary === CALENDAR_NAME
         );
         if (existing) return existing.id;
 
-        const created = await fetch(`${CALENDAR_API}/calendars`, {
+        const createRes = await fetch(`${CALENDAR_API}/calendars`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({ summary: CALENDAR_NAME }),
         });
-        const calendar = await created.json();
+        if (!createRes.ok) throw new Error(`캘린더 생성 실패 (${createRes.status})`);
+
+        const calendar = await createRes.json();
+        if (!calendar.id) throw new Error('캘린더 ID를 받아오지 못했어요.');
+
         return calendar.id;
     };
 
     const toMinutes = (value: number, unit: ReminderUnit): number => {
         if (unit === ReminderUnit.MINUTES) return value;
         if (unit === ReminderUnit.HOURS) return value * 60;
-        return value * 60 * 24;
+        if (unit === ReminderUnit.DAYS) return value * 60 * 24;
+        return value;
     };
 
     const addEvent = async (form: CalendarForm): Promise<void> => {
-        if (!isLoggedIn()) {
-            toast.error('로그인이 필요해요.');
-            return;
-        }
-
         try {
             const calendarId = await getOrCreateCalendar();
-            await fetch(`${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events`, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({
-                    summary: form.title,
-                    start: { date: form.date },
-                    end: { date: form.date },
-                    description: form.memo,
-                    reminders: {
-                        useDefault: false,
-                        overrides: form.reminders.map((r) => ({
-                            method: 'popup',
-                            minutes: toMinutes(r.value, r.unit),
-                        })),
-                    },
-                }),
-            });
+            const eventRes = await fetch(
+                `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events`,
+                {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        summary: form.title,
+                        start: { date: form.date },
+                        end: { date: form.date },
+                        description: form.memo,
+                        reminders: {
+                            useDefault: false,
+                            overrides: form.reminders.map((r) => ({
+                                method: 'popup',
+                                minutes: toMinutes(r.value, r.unit),
+                            })),
+                        },
+                    }),
+                }
+            );
+            if (!eventRes.ok) throw new Error(`이벤트 추가 실패 (${eventRes.status})`);
+
             toast.success('캘린더에 추가됐어요.');
-        } catch {
-            toast.error('캘린더 추가 중 오류가 발생했어요.');
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : '캘린더 추가 중 오류가 발생했어요.');
         }
     };
 
     const addEvents = async (jobs: ParsedJob[]): Promise<string[]> => {
-        if (!isLoggedIn()) {
-            toast.error('로그인이 필요해요.');
+        const openJobs = jobs.filter((j) => !j.dueDate);
+        const closedJobs = jobs.filter((j) => j.dueDate);
+
+        if (openJobs.length > 0) {
+            toast.info(`상시 공고 제외: ${openJobs.map((j) => j.company).join(', ')}`);
+        }
+        if (closedJobs.length === 0) {
+            toast.info('추가할 공고가 없어요. (전부 상시 공고)');
             return [];
         }
 
         try {
             const calendarId = await getOrCreateCalendar();
-
-            const openJobs = jobs.filter((j) => !j.dueDate);
-            const closedJobs = jobs.filter((j) => j.dueDate);
-
-            if (openJobs.length > 0) {
-                toast.info(`상시 공고 제외: ${openJobs.map((j) => j.company).join(', ')}`);
-            }
-
             const results = await Promise.allSettled(
-                closedJobs.map((job) =>
-                    fetch(`${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events`, {
-                        method: 'POST',
-                        headers: getHeaders(),
-                        body: JSON.stringify({
-                            summary: `${job.company} - ${job.title}`,
-                            start: { date: job.dueDate!.toISOString().split('T')[0] },
-                            end: { date: job.dueDate!.toISOString().split('T')[0] },
-                            description: job.url,
-                            reminders: {
-                                useDefault: false,
-                                overrides: [{ method: 'popup', minutes: 60 * 24 }],
-                            },
-                        }),
-                    })
-                )
+                closedJobs.map(async (job) => {
+                    const date = job.dueDate!.toISOString().split('T')[0];
+                    const res = await fetch(
+                        `${CALENDAR_API}/calendars/${encodeURIComponent(calendarId)}/events`,
+                        {
+                            method: 'POST',
+                            headers: getHeaders(),
+                            body: JSON.stringify({
+                                summary: `${job.company} - ${job.title}`,
+                                start: { date },
+                                end: { date },
+                                description: job.url,
+                                reminders: {
+                                    useDefault: false,
+                                    overrides: [{ method: 'popup', minutes: 60 * 24 }],
+                                },
+                            }),
+                        }
+                    );
+                    if (!res.ok)
+                        throw new Error(`캘린더 추가 중 오류가 발생했어요. (${res.status})`);
+                })
             );
 
             const succeeded = closedJobs.filter((_, idx) => results[idx].status === 'fulfilled');
@@ -119,8 +129,8 @@ const useGoogleCalendar = () => {
             }
 
             return succeeded.map((j) => j.url);
-        } catch {
-            toast.error('캘린더 추가 중 오류가 발생했어요.');
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : '캘린더 추가 중 오류가 발생했어요.');
             return [];
         }
     };
