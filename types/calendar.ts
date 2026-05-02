@@ -17,7 +17,7 @@ export interface CalendarCreateBody {
     summary: string;
 }
 
-export interface EventBody {
+export interface CalendarEvent {
     summary: string;
     start: { date: string };
     end: { date: string };
@@ -55,3 +55,4 @@ export const EventCreateSchema = z.object({
 
 export type CalendarItem = z.infer<typeof CalendarItemSchema>;
 export type CalendarList = z.infer<typeof CalendarListSchema>;
+export type CalendarCreate = z.infer<typeof CalendarCreateSchema>;

@@ -3,9 +3,9 @@ import { useState } from 'react';
 import JobRow from './JobRow';
 import Button from '@/components/common/Button';
 import { CheckSquare, Square } from 'lucide-react';
-import useGoogleCalendar from '@/hooks/calendar/useGoogleCalendar';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import GoogleAuthButton from '@/components/common/GoogleAuthButton';
+import useGoogleCalendarEvent from '@/hooks/calendar/useGoogleCalendarEvent';
 
 interface Props {
     jobs: ParsedJob[];
@@ -13,7 +13,7 @@ interface Props {
 
 const JobRowLayout = ({ jobs }: Props) => {
     const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-    const { addEvents } = useGoogleCalendar();
+    const { addEvents } = useGoogleCalendarEvent();
     const { isLoggedIn } = useGoogleAuth();
 
     const handleSelect = (url: string) => {

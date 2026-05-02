@@ -49,6 +49,12 @@ class DateUtils {
         if (dday <= 14) return 'text-amber-500';
         return 'text-blue-400';
     }
+
+    public static toMinutes = (value: number, unit: ReminderUnit): number => {
+        if (unit === ReminderUnit.MINUTES) return value;
+        if (unit === ReminderUnit.HOURS) return value * 60;
+        return value * 60 * 24;
+    };
 }
 
 export default DateUtils;
