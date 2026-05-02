@@ -20,7 +20,10 @@ const ModalTemplate = ({ children, isOpen, title, description, close }: Props) =
         <Dialog open={isOpen}>
             <DialogPortal>
                 <DialogOverlay onClick={close} className="fixed inset-0 bg-black/40" />
-                <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 w-full max-w-md z-50 flex flex-col gap-4">
+                <DialogContent
+                    aria-describedby={description}
+                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 w-full max-w-md z-50 flex flex-col gap-4"
+                >
                     <DialogTitle className="text-base font-medium text-gray-900">
                         {title}
                     </DialogTitle>
