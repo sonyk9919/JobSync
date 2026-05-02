@@ -6,15 +6,14 @@ import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CalendarForm, ReminderUnit } from '@/types/calendar';
 import DateUtils from '@/utils/DateUtils';
 import { Loader2, Plus, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 const JobCalendarForm = () => {
-    const { addEvent } = useGoogleCalendarEvent();
+    const { addEvent, isAddLoading } = useGoogleCalendarEvent();
     const { register: registerJob } = useRegisteredJobs();
     const reminderListRef = useRef<HTMLDivElement>(null);
     const { job, setJob } = useJobCalendarModal();
-    const [isLoading, setIsLoading] = useState(false);
 
     const { register, handleSubmit, reset, control } = useForm<CalendarForm>({
         defaultValues: {
@@ -45,14 +44,9 @@ const JobCalendarForm = () => {
     };
     const onSubmit = async (form: CalendarForm) => {
         if (!job) return;
-        setIsLoading(true);
-        try {
-            const registeredJob = await addEvent({ form, job });
-            registerJob(registeredJob.url);
-            setJob(null);
-        } finally {
-            setIsLoading(false);
-        }
+        const registeredJob = await addEvent({ form, job });
+        registerJob(registeredJob.url);
+        setJob(null);
     };
 
     useEffect(() => {
@@ -163,8 +157,8 @@ const JobCalendarForm = () => {
                 <Button variant="secondary" onClick={() => setJob(null)}>
                     취소
                 </Button>
-                <Button variant="primary" disabled={isLoading} onClick={handleSubmit(onSubmit)}>
-                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : '추가'}
+                <Button variant="primary" disabled={isAddLoading} onClick={handleSubmit(onSubmit)}>
+                    {isAddLoading ? <Loader2 className="size-4 animate-spin" /> : '추가'}
                 </Button>
             </div>
         </div>

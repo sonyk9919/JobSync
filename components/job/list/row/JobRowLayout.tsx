@@ -2,7 +2,7 @@ import { ParsedJob } from '@/utils/parser/types';
 import { useState } from 'react';
 import JobRow from './JobRow';
 import Button from '@/components/common/Button';
-import { CheckSquare, Square } from 'lucide-react';
+import { CheckSquare, Loader2, Square } from 'lucide-react';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import GoogleAuthButton from '@/components/common/GoogleAuthButton';
 import useGoogleCalendarEvent from '@/hooks/calendar/useGoogleCalendarEvent';
@@ -14,7 +14,7 @@ interface Props {
 
 const JobRowLayout = ({ jobs }: Props) => {
     const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-    const { addEvents } = useGoogleCalendarEvent();
+    const { addEvents, isAddAllLoading } = useGoogleCalendarEvent();
     const { isLoggedIn } = useGoogleAuth();
     const { registerAll } = useRegisteredJobs();
 
@@ -58,7 +58,11 @@ const JobRowLayout = ({ jobs }: Props) => {
                                 onClick={handleBulkAdd}
                                 disabled={selectedUrls.length === 0}
                             >
-                                캘린더 추가
+                                {isAddAllLoading ? (
+                                    <Loader2 className="size-4 animate-spin" />
+                                ) : (
+                                    '캘린더 추가'
+                                )}
                             </Button>
                             <span className="text-xs text-gray-300">
                                 마감 1일 전 알림 · 메모에 공고 URL 포함

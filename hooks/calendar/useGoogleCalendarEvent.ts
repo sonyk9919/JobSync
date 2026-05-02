@@ -19,7 +19,7 @@ const useGoogleCalendarEvent = () => {
         },
         enabled: hasCalendar,
     });
-    const { mutateAsync: addEventMutate } = useMutation({
+    const { mutateAsync: addEventMutate, isPending: isAddLoading } = useMutation({
         mutationFn: async ({ form, job }: { form: CalendarForm; job: ParsedJob }) => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
@@ -52,7 +52,7 @@ const useGoogleCalendarEvent = () => {
             toast.error(e instanceof Error ? e.message : '캘린더 추가 중 오류가 발생했어요.');
         },
     });
-    const { mutateAsync: addEventsMutate } = useMutation({
+    const { mutateAsync: addEventsMutate, isPending: isAddAllLoading } = useMutation({
         mutationFn: async (jobs: ParsedJob[]) => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
@@ -106,14 +106,19 @@ const useGoogleCalendarEvent = () => {
         },
         onSuccess: (jobs) => {
             queryClient.setQueryData(['CalendarEvents', calendarId], [...events, ...jobs]);
-            toast.success('캘린더에 추가됐어요.');
         },
         onError: (e) => {
             toast.error(e instanceof Error ? e.message : '캘린더 추가 중 오류가 발생했어요.');
         },
     });
 
-    return { events, addEvent: addEventMutate, addEvents: addEventsMutate };
+    return {
+        events,
+        addEvent: addEventMutate,
+        isAddLoading,
+        addEvents: addEventsMutate,
+        isAddAllLoading,
+    };
 };
 
 export default useGoogleCalendarEvent;
