@@ -4,7 +4,7 @@ import { ParsedJob } from '@/utils/parser/types';
 import JobUploader from './JobUploader';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import JobList from './JobList';
+import JobList from '../list/JobList';
 import JobCalendarModal from '../../calendar/modal/JobCalendarModal';
 
 const JobImporter = () => {

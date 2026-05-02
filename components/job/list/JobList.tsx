@@ -2,8 +2,8 @@ import { ParsedJob } from '@/utils/parser/types';
 import { useState } from 'react';
 import { LayoutGrid, List, FileSearch } from 'lucide-react';
 import IconButton from '@/components/common/IconButton';
-import JobCardLayout from './JobCardLayout';
-import JobRowLayout from './JobRowLayout';
+import JobCardLayout from './card/JobCardLayout';
+import JobRowLayout from './row/JobRowLayout';
 
 interface Props {
     jobs: ParsedJob[];
