@@ -9,7 +9,7 @@ import DateUtils from '@/utils/DateUtils';
 const useGoogleCalendarEvent = () => {
     const { calendarId, hasCalendar } = useGoogleCalendarId();
     const { mutateAsync: addEventMutate } = useMutation({
-        mutationFn: async (form: CalendarForm) => {
+        mutationFn: async ({ form, job }: { form: CalendarForm; job: ParsedJob }) => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
             }
@@ -24,6 +24,11 @@ const useGoogleCalendarEvent = () => {
                         method: ReminderMethod.POPUP,
                         minutes: DateUtils.toMinutes(r.value, r.unit),
                     })),
+                },
+                extendedProperties: {
+                    private: {
+                        origin: JSON.stringify(job),
+                    },
                 },
             });
         },
@@ -61,6 +66,11 @@ const useGoogleCalendarEvent = () => {
                         reminders: {
                             useDefault: false,
                             overrides: [{ method: ReminderMethod.POPUP, minutes: 60 * 24 }],
+                        },
+                        extendedProperties: {
+                            private: {
+                                origin: JSON.stringify(job),
+                            },
                         },
                     };
                     await CalendarAPI.addEvent(calendarId, event);

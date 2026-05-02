@@ -26,6 +26,9 @@ export interface CalendarEvent {
         useDefault: boolean;
         overrides: { method: ReminderMethod; minutes: number }[];
     };
+    extendedProperties?: {
+        private: Record<string, string>;
+    };
 }
 
 export const enum ReminderMethod {
