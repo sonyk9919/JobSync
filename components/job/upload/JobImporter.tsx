@@ -5,7 +5,7 @@ import JobUploader from './JobUploader';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import JobList from './JobList';
-import JobCalendarModal from '../modal/JobCalendarModal';
+import JobCalendarModal from '../../calendar/modal/JobCalendarModal';
 
 const JobImporter = () => {
     const [jobs, setJobs] = useState<ParsedJob[]>([]);
