@@ -16,6 +16,7 @@ export interface AccessToken {
 export interface RegisteredJobs {
     registeredUrls: string[];
     register: (url: string) => void;
+    registerAll: (urls: string[]) => void;
     unregister: (url: string) => void;
     isRegistered: (url: string) => boolean;
 }

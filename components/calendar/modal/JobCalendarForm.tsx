@@ -47,8 +47,8 @@ const JobCalendarForm = () => {
         if (!job) return;
         setIsLoading(true);
         try {
-            await addEvent({ form, job });
-            registerJob(job.url);
+            const registeredJob = await addEvent({ form, job });
+            registerJob(registeredJob.url);
             setJob(null);
         } finally {
             setIsLoading(false);

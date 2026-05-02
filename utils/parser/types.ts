@@ -1,3 +1,5 @@
+import z from 'zod';
+
 export enum EmploymentType {
     FULL_TIME = '정규직',
     CONTRACT = '계약직',
@@ -34,3 +36,17 @@ export interface ParsedJob {
     address: string;
     url: string;
 }
+
+export const ParsedJobSchema = z.object({
+    title: z.string(),
+    company: z.string(),
+    dueDate: z.preprocess(
+        (arg) => (typeof arg === 'string' ? new Date(arg) : arg),
+        z.date().nullable()
+    ),
+    educationType: z.nativeEnum(EducationType),
+    employmentType: z.nativeEnum(EmploymentType),
+    careerRequirements: z.nativeEnum(CareerType),
+    address: z.string(),
+    url: z.string(),
+});

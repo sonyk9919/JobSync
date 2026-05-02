@@ -17,6 +17,10 @@ export interface CalendarCreateBody {
     summary: string;
 }
 
+export interface CalendarEventResponse {
+    items: CalendarEvent[];
+}
+
 export interface CalendarEvent {
     summary: string;
     start: { date: string };
@@ -27,7 +31,10 @@ export interface CalendarEvent {
         overrides: { method: ReminderMethod; minutes: number }[];
     };
     extendedProperties?: {
-        private: Record<string, string>;
+        private: {
+            origin: string;
+            [key: string]: string;
+        };
     };
 }
 

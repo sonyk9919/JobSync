@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useGoogleCalendarId from './useGoogleCalendarId';
 import { toast } from 'sonner';
 import CalendarAPI from '@/api/calendar';
@@ -7,13 +7,24 @@ import { ParsedJob } from '@/utils/parser/types';
 import DateUtils from '@/utils/DateUtils';
 
 const useGoogleCalendarEvent = () => {
+    const queryClient = useQueryClient();
     const { calendarId, hasCalendar } = useGoogleCalendarId();
+    const { data: events = [] } = useQuery({
+        queryKey: ['CalendarEvents', calendarId],
+        queryFn: async () => {
+            if (!hasCalendar || !calendarId) {
+                throw new Error('캘린더 생성 후 재시도 해주세요.');
+            }
+            return await CalendarAPI.getEvents(calendarId);
+        },
+        enabled: hasCalendar,
+    });
     const { mutateAsync: addEventMutate } = useMutation({
         mutationFn: async ({ form, job }: { form: CalendarForm; job: ParsedJob }) => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
             }
-            return await CalendarAPI.addEvent(calendarId, {
+            await CalendarAPI.addEvent(calendarId, {
                 summary: form.title,
                 start: { date: form.date },
                 end: { date: form.date },
@@ -31,8 +42,10 @@ const useGoogleCalendarEvent = () => {
                     },
                 },
             });
+            return job;
         },
-        onSuccess: () => {
+        onSuccess: (job) => {
+            queryClient.setQueryData(['CalendarEvents', calendarId], [...events, job]);
             toast.success('캘린더에 추가됐어요.');
         },
         onError: (e) => {
@@ -89,9 +102,10 @@ const useGoogleCalendarEvent = () => {
                 toast.error(`${truncated} 공고를 추가하지 못했어요.`);
             }
 
-            return succeeded.map((j) => j.url);
+            return succeeded;
         },
-        onSuccess: () => {
+        onSuccess: (jobs) => {
+            queryClient.setQueryData(['CalendarEvents', calendarId], [...events, ...jobs]);
             toast.success('캘린더에 추가됐어요.');
         },
         onError: (e) => {
@@ -99,7 +113,7 @@ const useGoogleCalendarEvent = () => {
         },
     });
 
-    return { addEvent: addEventMutate, addEvents: addEventsMutate };
+    return { events, addEvent: addEventMutate, addEvents: addEventsMutate };
 };
 
 export default useGoogleCalendarEvent;

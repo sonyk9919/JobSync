@@ -6,6 +6,7 @@ import { CheckSquare, Square } from 'lucide-react';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import GoogleAuthButton from '@/components/common/GoogleAuthButton';
 import useGoogleCalendarEvent from '@/hooks/calendar/useGoogleCalendarEvent';
+import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 
 interface Props {
     jobs: ParsedJob[];
@@ -15,6 +16,7 @@ const JobRowLayout = ({ jobs }: Props) => {
     const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
     const { addEvents } = useGoogleCalendarEvent();
     const { isLoggedIn } = useGoogleAuth();
+    const { registerAll } = useRegisteredJobs();
 
     const handleSelect = (url: string) => {
         setSelectedUrls((prev) =>
@@ -26,9 +28,10 @@ const JobRowLayout = ({ jobs }: Props) => {
         setSelectedUrls(selectedUrls.length === jobs.length ? [] : jobs.map((j) => j.url));
     };
 
-    const handleBulkAdd = () => {
+    const handleBulkAdd = async () => {
         const selectedJobs = jobs.filter((j) => selectedUrls.includes(j.url));
-        addEvents(selectedJobs);
+        const registeredJobs = await addEvents(selectedJobs);
+        registerAll(registeredJobs.map((job) => job.url));
     };
 
     const isAllSelected = selectedUrls.length === jobs.length && jobs.length > 0;

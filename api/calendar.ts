@@ -1,6 +1,13 @@
-import { CalendarCreate, CalendarCreateBody, CalendarEvent, CalendarList } from '@/types/calendar';
+import {
+    CalendarCreate,
+    CalendarCreateBody,
+    CalendarEvent,
+    CalendarEventResponse,
+    CalendarList,
+} from '@/types/calendar';
 import calendarAxios from './calendar-axios';
 import { CALENDAR_NAME } from '@/hooks/calendar/useGoogleCalendarId';
+import { ParsedJobSchema } from '@/utils/parser/types';
 
 const CalendarAPI = {
     getCalendarId: async () => {
@@ -14,6 +21,36 @@ const CalendarAPI = {
     },
     addEvent: async (calendarId: string, event: CalendarEvent) => {
         await calendarAxios.post(`/calendars/${encodeURIComponent(calendarId)}/events`, event);
+    },
+    getEvents: async (calendarId: string) => {
+        const now = new Date().toISOString();
+        const result = await calendarAxios.get<CalendarEventResponse>(
+            `/calendars/${encodeURIComponent(calendarId)}/events`,
+            {
+                params: {
+                    maxResults: 2500,
+                    singleEvents: true,
+                    orderBy: 'startTime',
+                    timeMin: now,
+                },
+            }
+        );
+        return (result.data.items || [])
+            .map((event) => {
+                if (!event.extendedProperties?.private) {
+                    console.error(`${event.summary} 일정은 원본 정보가 없습니다.`);
+                    return null;
+                }
+                try {
+                    console.log(event.extendedProperties.private.origin);
+                    return ParsedJobSchema.parse(
+                        JSON.parse(event.extendedProperties.private.origin)
+                    );
+                } catch (e) {
+                    console.error('타입 검증에 실패했습니다.', event.summary, e);
+                }
+            })
+            .filter(Boolean);
     },
 };
 
