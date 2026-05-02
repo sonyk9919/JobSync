@@ -1,12 +1,8 @@
 import { ParsedJob } from '@/utils/parser/types';
 import { useState } from 'react';
 import JobRow from './JobRow';
-import Button from '@/components/common/Button';
-import { CheckSquare, Loader2, Square } from 'lucide-react';
-import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
-import GoogleAuthButton from '@/components/common/GoogleAuthButton';
-import useGoogleCalendarEvent from '@/hooks/calendar/useGoogleCalendarEvent';
-import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
+import { CheckSquare, Square } from 'lucide-react';
+import JobCalendarAction from './JobCalendarAction';
 
 interface Props {
     jobs: ParsedJob[];
@@ -14,9 +10,6 @@ interface Props {
 
 const JobRowLayout = ({ jobs }: Props) => {
     const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-    const { addEvents, isAddAllLoading } = useGoogleCalendarEvent();
-    const { isLoggedIn } = useGoogleAuth();
-    const { registerAll } = useRegisteredJobs();
 
     const handleSelect = (url: string) => {
         setSelectedUrls((prev) =>
@@ -26,12 +19,6 @@ const JobRowLayout = ({ jobs }: Props) => {
 
     const handleSelectAll = () => {
         setSelectedUrls(selectedUrls.length === jobs.length ? [] : jobs.map((j) => j.url));
-    };
-
-    const handleBulkAdd = async () => {
-        const selectedJobs = jobs.filter((j) => selectedUrls.includes(j.url));
-        const registeredJobs = await addEvents(selectedJobs);
-        registerAll(registeredJobs.map((job) => job.url));
     };
 
     const isAllSelected = selectedUrls.length === jobs.length && jobs.length > 0;
@@ -50,34 +37,11 @@ const JobRowLayout = ({ jobs }: Props) => {
                     )}
                     전체 선택
                 </div>
-                <div className="flex flex-col items-end gap-0.5">
-                    {isLoggedIn() ? (
-                        <>
-                            <Button
-                                variant="primary"
-                                onClick={handleBulkAdd}
-                                disabled={selectedUrls.length === 0}
-                            >
-                                {isAddAllLoading ? (
-                                    <Loader2 className="size-4 animate-spin" />
-                                ) : (
-                                    '캘린더 추가'
-                                )}
-                            </Button>
-                            <span className="text-xs text-gray-300">
-                                마감 1일 전 알림 · 메모에 공고 URL 포함
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <GoogleAuthButton />
-                            <span className="text-xs text-gray-300">
-                                구글 로그인 후 캘린더에 일정을 추가할 수 있어요
-                            </span>
-                        </>
-                    )}
-                </div>
+                <JobCalendarAction
+                    selectedJobs={jobs.filter((job) => selectedUrls.includes(job.url))}
+                />
             </div>
+
             <div className="flex flex-col gap-2">
                 {jobs.map((job) => (
                     <JobRow

@@ -20,3 +20,8 @@ export interface RegisteredJobs {
     unregister: (url: string) => void;
     isRegistered: (url: string) => boolean;
 }
+
+export interface CalendarSetUpModal {
+    isOpen: boolean;
+    setOpen: (open: boolean) => void;
+}

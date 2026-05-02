@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from 'sonner';
 import Script from 'next/script';
 import QueryProvider from '@/components/provider/QueryProvider';
+import GlobalModal from '@/components/common/GlobalModal';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -31,7 +32,10 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-white`}
         >
             <body className="min-h-full flex flex-col">
-                <QueryProvider>{children}</QueryProvider>
+                <QueryProvider>
+                    {children}
+                    <GlobalModal />
+                </QueryProvider>
                 <Toaster />
             </body>
             <Script src="https://accounts.google.com/gsi/client" async />
