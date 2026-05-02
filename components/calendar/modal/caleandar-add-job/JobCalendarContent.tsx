@@ -1,5 +1,5 @@
 import useGoogleCalendarId from '@/hooks/calendar/useGoogleCalendarId';
-import GoogleCalendarSetup from '../common/GoogleCalendarSetup';
+import GoogleCalendarSetup from '../../common/GoogleCalendarSetup';
 import JobCalendarForm from './JobCalendarForm';
 import { Loader2 } from 'lucide-react';
 
