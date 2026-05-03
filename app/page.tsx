@@ -1,10 +1,10 @@
-import CalendarView from '@/components/calendar/view/calendar/CalendarView';
+import BoardViewSelector from '@/components/calendar/view/ViewBoardSelector';
 import PageContainer from '@/components/common/PageContainter';
 
 export default function Home() {
     return (
         <PageContainer>
-            <CalendarView />
+            <BoardViewSelector />
         </PageContainer>
     );
 }

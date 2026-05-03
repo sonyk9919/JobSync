@@ -15,7 +15,7 @@ const CalendarCell = ({ date, jobs, isCurrentMonth, onClick }: Props) => {
         <div
             onClick={onClick}
             className={cn(
-                'min-h-16 p-1 flex flex-col gap-0.5 rounded-lg cursor-pointer hover:bg-gray-50 duration-150',
+                'min-h-24 max-h-24 p-1 flex flex-col gap-0.5 rounded-lg cursor-pointer hover:bg-gray-50 duration-150',
                 !isCurrentMonth && 'opacity-30'
             )}
         >

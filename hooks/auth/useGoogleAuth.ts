@@ -7,7 +7,7 @@ const SCOPE = [
 ].join(' ');
 
 const useGoogleAuth = () => {
-    const { accessToken, login, logout, isLoggedIn } = useAccessToken();
+    const { accessToken, login, logout, isLoggedIn, hasHydrated } = useAccessToken();
 
     const googleLogin = () => {
         const client = google.accounts.oauth2.initTokenClient({
@@ -29,7 +29,15 @@ const useGoogleAuth = () => {
         google.accounts.oauth2.revoke(accessToken, () => logout());
     };
 
-    return { accessToken, googleLogin, googleLogout, isLoggedIn };
+    const isLoggedInSafe = () => hasHydrated && isLoggedIn();
+
+    return {
+        accessToken,
+        googleLogin,
+        googleLogout,
+        isLoggedIn: isLoggedInSafe,
+        isLoading: !hasHydrated,
+    };
 };
 
 export default useGoogleAuth;

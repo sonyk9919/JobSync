@@ -1,9 +1,15 @@
+'use client';
+
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import GoogleLogo from '../icons/GoogleLogo';
+import LoadingMessage from './LoadingMessage';
 
 const GoogleAuthButton = () => {
-    const { isLoggedIn, googleLogin, googleLogout } = useGoogleAuth();
+    const { isLoggedIn, googleLogin, googleLogout, isLoading } = useGoogleAuth();
 
+    if (isLoading) {
+        return <LoadingMessage>로그인 여부를 확인중이에요</LoadingMessage>;
+    }
     if (isLoggedIn()) {
         return (
             <button

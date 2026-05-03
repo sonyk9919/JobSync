@@ -1,3 +1,5 @@
+'use client';
+
 import Button from '@/components/common/Button';
 import useGoogleCalendarId from '@/hooks/calendar/useGoogleCalendarId';
 import { Calendar, Loader2 } from 'lucide-react';

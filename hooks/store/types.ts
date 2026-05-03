@@ -8,6 +8,8 @@ export interface JobCalendarModal {
 export interface AccessToken {
     accessToken: string | null;
     expiredAt: number | null;
+    hasHydrated: boolean;
+    completeHydrate: () => void;
     login: (token: string, expiredAt: number) => void;
     logout: () => void;
     isLoggedIn: () => boolean;

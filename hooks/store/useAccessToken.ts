@@ -7,6 +7,8 @@ const useAccessToken = create<AccessToken>()(
         (set, get) => ({
             accessToken: null,
             expiredAt: null,
+            hasHydrated: false,
+            completeHydrate: () => set({ hasHydrated: true }),
             login: (accessToken, expiredAt) => set({ accessToken, expiredAt }),
             logout: () => set({ accessToken: null, expiredAt: null }),
             isLoggedIn: () => {
@@ -26,6 +28,7 @@ const useAccessToken = create<AccessToken>()(
                 if (!state.expiredAt || Date.now() > state.expiredAt) {
                     state.logout();
                 }
+                state.completeHydrate();
             },
         }
     )
