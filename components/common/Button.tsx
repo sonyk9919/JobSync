@@ -1,12 +1,13 @@
 import { cn } from '@/utils/css/tailwind';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant: 'primary' | 'secondary';
+    variant: 'primary' | 'secondary' | 'danger';
 }
 
 const Button = ({ variant, disabled, className, children, ...props }: Props): React.ReactNode => {
     const variantClass = {
         primary: 'bg-blue-400 text-white hover:bg-blue-600',
+        danger: 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white',
         secondary: 'border border-gray-100 text-gray-400 hover:bg-gray-50',
     }[variant];
 

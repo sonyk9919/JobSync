@@ -16,10 +16,10 @@ const useGoogleCalendarEventMutate = () => {
             return await CalendarAPI.addEvent(calendarId, form, job);
         },
         onSuccess: (event: CalendarEventWithId<ParsedJob>) => {
-            queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: CalendarEventWithId<ParsedJob>[]) => [
-                ...(prev || []),
-                event,
-            ]);
+            queryClient.setQueryData(
+                ['CalendarEvents', calendarId],
+                (prev?: CalendarEventWithId<ParsedJob>[]) => [...(prev || []), event]
+            );
             toast.success('캘린더에 추가됐어요.');
         },
         onError: (e) => {
@@ -67,13 +67,15 @@ const useGoogleCalendarEventMutate = () => {
                 toast.error(`${truncated} 공고를 추가하지 못했어요.`);
             }
 
-            return results.filter(result => result.status === 'fulfilled').map(result => result.value);
+            return results
+                .filter((result) => result.status === 'fulfilled')
+                .map((result) => result.value);
         },
         onSuccess: (events: CalendarEventWithId<ParsedJob>[]) => {
-            queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: CalendarEventWithId<ParsedJob>[]) => [
-                ...(prev || []),
-                ...events,
-            ]);
+            queryClient.setQueryData(
+                ['CalendarEvents', calendarId],
+                (prev?: CalendarEventWithId<ParsedJob>[]) => [...(prev || []), ...events]
+            );
         },
         onError: (e) => {
             toast.error(e instanceof Error ? e.message : '캘린더 추가 중 오류가 발생했어요.');
@@ -90,8 +92,7 @@ const useGoogleCalendarEventMutate = () => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
             }
-            await CalendarAPI.updateEvent(calendarId, form, event);
-            return event;
+            return await CalendarAPI.updateEvent(calendarId, form, event);
         },
         onSuccess: (event) => {
             queryClient.setQueryData(

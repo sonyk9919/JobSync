@@ -1,3 +1,5 @@
+'use client';
+
 import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CareerType, EducationType, EmploymentType, ParsedJob } from '@/utils/parser/types';
 import DateUtils from '@/utils/DateUtils';

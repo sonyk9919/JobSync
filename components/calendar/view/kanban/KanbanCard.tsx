@@ -1,3 +1,6 @@
+'use client';
+
+import useCalendarEditModal from '@/hooks/store/useCalendarEditModal';
 import { CalendarEventWithId } from '@/types/calendar';
 import DateUtils from '@/utils/DateUtils';
 import { CareerType, EducationType, ParsedJob } from '@/utils/parser/types';
@@ -8,6 +11,7 @@ interface Props {
 }
 
 const KanbanCard = ({ event }: Props) => {
+    const { setEvent } = useCalendarEditModal();
     const dueDate = new Date(event.end.date);
     const dday = DateUtils.getDday(dueDate);
     const job = event.extendedProperties.private.origin;
@@ -19,8 +23,8 @@ const KanbanCard = ({ event }: Props) => {
 
     return (
         <div
-            onClick={onOpenUrl}
-            className="bg-white border border-gray-100 rounded-xl p-3 md:p-4 flex flex-col gap-2 hover:border-blue-100 hover:shadow-sm transition-all duration-200"
+            onClick={() => setEvent(event)}
+            className="cursor-pointer bg-white border border-gray-100 rounded-xl p-3 md:p-4 flex flex-col gap-2 hover:border-blue-100 hover:shadow-sm transition-all duration-200"
         >
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">

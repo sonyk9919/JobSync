@@ -12,12 +12,14 @@ interface Props {
     actionLabel: string;
     onSubmit: (form: CalendarForm) => Promise<void>;
     defaultValues: CalendarForm;
+    onRemove?: () => Promise<void>;
 }
 
 const JobCalendarForm = ({
     defaultValues,
     onSubmit,
     onClose,
+    onRemove,
     isSubmitLoading,
     actionLabel,
 }: Props) => {
@@ -139,6 +141,11 @@ const JobCalendarForm = ({
                 <Button variant="secondary" onClick={onClose}>
                     취소
                 </Button>
+                {onRemove && (
+                    <Button variant="danger" onClick={onRemove}>
+                        삭제
+                    </Button>
+                )}
                 <Button
                     variant="primary"
                     disabled={isSubmitLoading}

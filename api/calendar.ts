@@ -44,28 +44,38 @@ const CalendarAPI = {
     addEvent: async (calendarId: string, form: CalendarForm, job: ParsedJob) => {
         const result = await calendarAxios.post<CalendarEventWithId>(
             `/calendars/${encodeURIComponent(calendarId)}/events`,
-            buildEvent(form, job),
+            buildEvent(form, job)
         );
         return {
             ...result.data,
             extendedProperties: {
                 private: {
                     origin: ParsedJobSchema.parse(
-                                    JSON.parse(result.data.extendedProperties.private.origin)
-                                ),
-                }
-            }
-        }
+                        JSON.parse(result.data.extendedProperties.private.origin)
+                    ),
+                },
+            },
+        };
     },
     updateEvent: async (
         calendarId: string,
         form: CalendarForm,
         event: CalendarEventWithId<ParsedJob>
     ) => {
-        await calendarAxios.patch(
+        const result = await calendarAxios.patch<CalendarEventWithId>(
             `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(event.id)}`,
             buildEvent(form, event.extendedProperties.private.origin)
         );
+        return {
+            ...result.data,
+            extendedProperties: {
+                private: {
+                    origin: ParsedJobSchema.parse(
+                        JSON.parse(result.data.extendedProperties.private.origin)
+                    ),
+                },
+            },
+        };
     },
     getEvents: async (calendarId: string) => {
         const now = new Date().toISOString();

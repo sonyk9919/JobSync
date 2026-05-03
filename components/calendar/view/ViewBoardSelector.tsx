@@ -13,6 +13,7 @@ import useGoogleCalendarId from '@/hooks/calendar/useGoogleCalendarId';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import LoadingMessage from '@/components/common/LoadingMessage';
 import { CalendarEventWithId } from '@/types/calendar';
+import CalendarJobEditModal from '../modal/calendar-job/CalendarJobEditModal';
 
 enum ViewType {
     KANBAN = 'kanban',
@@ -50,6 +51,7 @@ const BoardViewSelector = () => {
                 isLoggedIn={isLoggedIn()}
                 hasCalendar={hasCalendar}
             />
+            <CalendarJobEditModal />
         </div>
     );
 };

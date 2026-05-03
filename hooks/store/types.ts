@@ -1,3 +1,4 @@
+import { CalendarEventWithId } from '@/types/calendar';
 import { ParsedJob } from '@/utils/parser/types';
 
 export interface CalendarAddModal {
@@ -5,6 +6,10 @@ export interface CalendarAddModal {
     setJob: (job: ParsedJob | null) => void;
 }
 
+export interface CalendarEditModal {
+    event: CalendarEventWithId<ParsedJob> | null;
+    setEvent: (event: CalendarEventWithId<ParsedJob> | null) => void;
+}
 export interface AccessToken {
     accessToken: string | null;
     expiredAt: number | null;

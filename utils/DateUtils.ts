@@ -53,6 +53,13 @@ class DateUtils {
         return 'text-blue-400';
     }
 
+    public static fromMinutes = (minutes: number): { value: number; unit: ReminderUnit } => {
+        if (minutes % (60 * 24) === 0)
+            return { value: minutes / (60 * 24), unit: ReminderUnit.DAYS };
+        if (minutes % 60 === 0) return { value: minutes / 60, unit: ReminderUnit.HOURS };
+        return { value: minutes, unit: ReminderUnit.MINUTES };
+    };
+
     public static toMinutes = (value: number, unit: ReminderUnit): number => {
         if (unit === ReminderUnit.MINUTES) return value;
         if (unit === ReminderUnit.HOURS) return value * 60;
@@ -67,16 +74,22 @@ class DateUtils {
 
         events.forEach((event) => {
             const dday = this.getDday(new Date(event.end.date));
-            if (dday === null) {
-                return;
-            }
+            if (dday === null) return;
             if (dday <= 3) d3.push(event);
             else if (dday <= 7) d7.push(event);
             else if (dday <= 10) d10.push(event);
             else later.push(event);
         });
 
-        return { d3, d7, d10, later };
+        const sortByDday = (a: CalendarEventWithId<ParsedJob>, b: CalendarEventWithId<ParsedJob>) =>
+            new Date(a.end.date).getTime() - new Date(b.end.date).getTime();
+
+        return {
+            d3: d3.sort(sortByDday),
+            d7: d7.sort(sortByDday),
+            d10: d10.sort(sortByDday),
+            later: later.sort(sortByDday),
+        };
     }
 
     public static getCalendarCells(date: Date): (Date | null)[] {
