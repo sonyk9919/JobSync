@@ -7,6 +7,7 @@ import { cn } from '@/utils/css/tailwind';
 const NAV_ITEMS = [
     { label: '일정', href: '/' },
     { label: '공고 등록', href: '/upload' },
+    { label: '이용약관', href: '/privacy' },
 ];
 
 const Header = () => {
