@@ -107,6 +107,27 @@ const useGoogleCalendarEventMutate = () => {
         },
     });
 
+    const { mutateAsync: deleteEventMutate, isPending: isDeleteLoading } = useMutation({
+        mutationFn: async (event: CalendarEventWithId<ParsedJob>) => {
+            if (!hasCalendar || !calendarId) {
+                throw new Error('캘린더 생성 후 재시도 해주세요.');
+            }
+            await CalendarAPI.deleteEvent(calendarId, event.id);
+            return event;
+        },
+        onSuccess: (event) => {
+            queryClient.setQueryData(
+                ['CalendarEvents', calendarId],
+                (prev?: CalendarEventWithId<ParsedJob>[]) =>
+                    (prev || []).filter((e) => e.id !== event.id)
+            );
+            toast.success('캘린더 일정이 삭제됐어요.');
+        },
+        onError: (e) => {
+            toast.error(e instanceof Error ? e.message : '캘린더 삭제 중 오류가 발생했어요.');
+        },
+    });
+
     return {
         addEvent: addEventMutate,
         isAddLoading,
@@ -114,6 +135,8 @@ const useGoogleCalendarEventMutate = () => {
         isAddAllLoading,
         updateEvent: updateEventMutate,
         isUpdateLoading,
+        deleteEvent: deleteEventMutate,
+        isDeleteLoading,
     };
 };
 

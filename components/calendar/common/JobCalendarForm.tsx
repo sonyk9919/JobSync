@@ -13,6 +13,7 @@ interface Props {
     onSubmit: (form: CalendarForm) => Promise<void>;
     defaultValues: CalendarForm;
     onRemove?: () => Promise<void>;
+    isRemoveLoading?: boolean;
 }
 
 const JobCalendarForm = ({
@@ -21,6 +22,7 @@ const JobCalendarForm = ({
     onClose,
     onRemove,
     isSubmitLoading,
+    isRemoveLoading,
     actionLabel,
 }: Props) => {
     const reminderListRef = useRef<HTMLDivElement>(null);
@@ -143,7 +145,7 @@ const JobCalendarForm = ({
                 </Button>
                 {onRemove && (
                     <Button variant="danger" onClick={onRemove}>
-                        삭제
+                        {isRemoveLoading ? <Loader2 className="size-4 animate-spin" /> : '삭제'}
                     </Button>
                 )}
                 <Button

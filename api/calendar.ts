@@ -57,6 +57,11 @@ const CalendarAPI = {
             },
         };
     },
+    deleteEvent: async (calendarId: string, eventId: string) => {
+        await calendarAxios.delete(
+            `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`
+        );
+    },
     updateEvent: async (
         calendarId: string,
         form: CalendarForm,
