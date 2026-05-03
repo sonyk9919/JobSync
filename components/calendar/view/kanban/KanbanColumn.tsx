@@ -20,7 +20,7 @@ const KanbanColumn = ({ title, events }: Props) => {
                         공고가 없어요
                     </div>
                 ) : (
-                    events.map((event, i) => <KanbanCard key={i} event={event} />)
+                    events.map((event) => <KanbanCard key={event.id} event={event} />)
                 )}
             </div>
         </div>

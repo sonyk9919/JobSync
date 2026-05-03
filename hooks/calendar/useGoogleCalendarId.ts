@@ -21,7 +21,6 @@ const useGoogleCalendarId = () => {
         mutationFn: async () => await CalendarAPI.createCalendar({ summary: CALENDAR_NAME }),
         onSuccess: (id) => {
             queryClient.setQueryData(['CalendarId'], id);
-            console.log(id);
             toast.success('캘린더를 생성했어요.');
         },
     });
