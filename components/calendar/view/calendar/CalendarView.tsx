@@ -29,7 +29,7 @@ const CalendarView = ({ jobs }: Props) => {
             <CalendarGrid currentDate={currentDate} jobs={jobs} onSelectDate={setSelectedDate} />
             {selectedDate && (
                 <CalendarJobViewModal
-                    isOpen={!!selectedJobs}
+                    isOpen={!!selectedDate}
                     date={selectedDate}
                     jobs={selectedJobs}
                     onClose={() => setSelectedDate(null)}

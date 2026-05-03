@@ -66,11 +66,8 @@ class DateUtils {
         const later: ParsedJob[] = [];
 
         jobs.forEach((job) => {
-            const dueDate = job.dueDate ?? new Date();
-            const dday = DateUtils.getDday(dueDate);
-
+            const dday = DateUtils.getDday(job.dueDate);
             if (dday === null) {
-                later.push(job);
                 return;
             }
             if (dday <= 3) d3.push(job);
