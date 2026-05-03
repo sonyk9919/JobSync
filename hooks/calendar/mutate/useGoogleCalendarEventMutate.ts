@@ -14,6 +14,10 @@ const useGoogleCalendarEventMutate = () => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
             }
+            const origin: ParsedJob = {
+                ...job,
+                dueDate: new Date(form.date),
+            };
             await CalendarAPI.addEvent(calendarId, {
                 summary: form.title,
                 start: { date: form.date },
@@ -28,11 +32,11 @@ const useGoogleCalendarEventMutate = () => {
                 },
                 extendedProperties: {
                     private: {
-                        origin: JSON.stringify(job),
+                        origin: JSON.stringify(origin),
                     },
                 },
             });
-            return job;
+            return origin;
         },
         onSuccess: (job) => {
             queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: ParsedJob[]) => [
