@@ -1,4 +1,5 @@
 import { ReminderUnit } from '@/types/calendar';
+import { ParsedJob } from './parser/types';
 
 class DateUtils {
     private static getAlertDate(date: string, value: number, unit: ReminderUnit): Date {
@@ -55,6 +56,29 @@ class DateUtils {
         if (unit === ReminderUnit.HOURS) return value * 60;
         return value * 60 * 24;
     };
+
+    public static groupByDday(jobs: ParsedJob[]) {
+        const d3: ParsedJob[] = [];
+        const d7: ParsedJob[] = [];
+        const d10: ParsedJob[] = [];
+        const later: ParsedJob[] = [];
+
+        jobs.forEach((job) => {
+            const dueDate = job.dueDate ?? new Date();
+            const dday = DateUtils.getDday(dueDate);
+
+            if (dday === null) {
+                later.push(job);
+                return;
+            }
+            if (dday <= 3) d3.push(job);
+            else if (dday <= 7) d7.push(job);
+            else if (dday <= 10) d10.push(job);
+            else later.push(job);
+        });
+
+        return { d3, d7, d10, later };
+    }
 }
 
 export default DateUtils;

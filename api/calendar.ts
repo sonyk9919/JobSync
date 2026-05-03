@@ -7,7 +7,7 @@ import {
 } from '@/types/calendar';
 import calendarAxios from './calendar-axios';
 import { CALENDAR_NAME } from '@/hooks/calendar/useGoogleCalendarId';
-import { ParsedJobSchema } from '@/utils/parser/types';
+import { ParsedJob, ParsedJobSchema } from '@/utils/parser/types';
 
 const CalendarAPI = {
     getCalendarId: async () => {
@@ -50,7 +50,7 @@ const CalendarAPI = {
                     console.error('타입 검증에 실패했습니다.', event.summary, e);
                 }
             })
-            .filter(Boolean);
+            .filter((job): job is ParsedJob => job != null);
     },
 };
 

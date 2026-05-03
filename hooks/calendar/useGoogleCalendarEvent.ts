@@ -4,7 +4,11 @@ import CalendarAPI from '@/api/calendar';
 
 const useGoogleCalendarEvent = () => {
     const { calendarId, hasCalendar } = useGoogleCalendarId();
-    const { data: events = [] } = useQuery({
+    const {
+        data: jobs = [],
+        isLoading,
+        isSuccess,
+    } = useQuery({
         queryKey: ['CalendarEvents', calendarId],
         queryFn: async () => {
             if (!hasCalendar || !calendarId) {
@@ -15,7 +19,7 @@ const useGoogleCalendarEvent = () => {
         enabled: hasCalendar,
     });
 
-    return { events };
+    return { jobs, isLoading: isLoading || !isSuccess };
 };
 
 export default useGoogleCalendarEvent;
