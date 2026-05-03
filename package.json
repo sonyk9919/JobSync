@@ -2,6 +2,7 @@
     "name": "job-sync",
     "version": "0.1.0",
     "private": true,
+    "homepage": "https://job-sync-o8xyknace-sonyk9919s-projects.vercel.app",
     "scripts": {
         "dev": "next dev",
         "build": "next build",
