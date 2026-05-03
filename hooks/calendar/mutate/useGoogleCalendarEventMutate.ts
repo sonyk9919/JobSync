@@ -1,6 +1,5 @@
 import CalendarAPI from '@/api/calendar';
-import { CalendarForm, ReminderMethod } from '@/types/calendar';
-import DateUtils from '@/utils/DateUtils';
+import { CalendarEventWithId, CalendarForm, ReminderUnit } from '@/types/calendar';
 import { ParsedJob } from '@/utils/parser/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -14,34 +13,12 @@ const useGoogleCalendarEventMutate = () => {
             if (!hasCalendar || !calendarId) {
                 throw new Error('캘린더 생성 후 재시도 해주세요.');
             }
-            const origin: ParsedJob = {
-                ...job,
-                dueDate: new Date(form.date),
-            };
-            await CalendarAPI.addEvent(calendarId, {
-                summary: form.title,
-                start: { date: form.date },
-                end: { date: form.date },
-                description: form.memo,
-                reminders: {
-                    useDefault: false,
-                    overrides: form.reminders.map((r) => ({
-                        method: ReminderMethod.POPUP,
-                        minutes: DateUtils.toMinutes(r.value, r.unit),
-                    })),
-                },
-                extendedProperties: {
-                    private: {
-                        origin: JSON.stringify(origin),
-                    },
-                },
-            });
-            return origin;
+            return await CalendarAPI.addEvent(calendarId, form, job);
         },
-        onSuccess: (job) => {
-            queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: ParsedJob[]) => [
+        onSuccess: (event: CalendarEventWithId<ParsedJob>) => {
+            queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: CalendarEventWithId<ParsedJob>[]) => [
                 ...(prev || []),
-                job,
+                event,
             ]);
             toast.success('캘린더에 추가됐어요.');
         },
@@ -68,22 +45,13 @@ const useGoogleCalendarEventMutate = () => {
             const results = await Promise.allSettled(
                 closedJobs.map(async (job) => {
                     const date = job.dueDate!.toISOString().split('T')[0];
-                    const event = {
-                        summary: `${job.company} - ${job.title}`,
-                        start: { date },
-                        end: { date },
-                        description: job.url,
-                        reminders: {
-                            useDefault: false,
-                            overrides: [{ method: ReminderMethod.POPUP, minutes: 60 * 24 }],
-                        },
-                        extendedProperties: {
-                            private: {
-                                origin: JSON.stringify(job),
-                            },
-                        },
+                    const form: CalendarForm = {
+                        title: job.title,
+                        date,
+                        memo: job.url,
+                        reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
                     };
-                    await CalendarAPI.addEvent(calendarId, event);
+                    return await CalendarAPI.addEvent(calendarId, form, job);
                 })
             );
 
@@ -99,16 +67,42 @@ const useGoogleCalendarEventMutate = () => {
                 toast.error(`${truncated} 공고를 추가하지 못했어요.`);
             }
 
-            return succeeded;
+            return results.filter(result => result.status === 'fulfilled').map(result => result.value);
         },
-        onSuccess: (jobs) => {
-            queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: ParsedJob[]) => [
+        onSuccess: (events: CalendarEventWithId<ParsedJob>[]) => {
+            queryClient.setQueryData(['CalendarEvents', calendarId], (prev?: CalendarEventWithId<ParsedJob>[]) => [
                 ...(prev || []),
-                ...jobs,
+                ...events,
             ]);
         },
         onError: (e) => {
             toast.error(e instanceof Error ? e.message : '캘린더 추가 중 오류가 발생했어요.');
+        },
+    });
+    const { mutateAsync: updateEventMutate, isPending: isUpdateLoading } = useMutation({
+        mutationFn: async ({
+            form,
+            event,
+        }: {
+            form: CalendarForm;
+            event: CalendarEventWithId<ParsedJob>;
+        }) => {
+            if (!hasCalendar || !calendarId) {
+                throw new Error('캘린더 생성 후 재시도 해주세요.');
+            }
+            await CalendarAPI.updateEvent(calendarId, form, event);
+            return event;
+        },
+        onSuccess: (event) => {
+            queryClient.setQueryData(
+                ['CalendarEvents', calendarId],
+                (prev?: CalendarEventWithId[]) =>
+                    (prev || []).map((e) => (e.id === event.id ? event : e))
+            );
+            toast.success('캘린더 일정이 수정됐어요.');
+        },
+        onError: (e) => {
+            toast.error(e instanceof Error ? e.message : '캘린더 수정 중 오류가 발생했어요.');
         },
     });
 
@@ -117,6 +111,8 @@ const useGoogleCalendarEventMutate = () => {
         isAddLoading,
         addEvents: addEventsMutate,
         isAddAllLoading,
+        updateEvent: updateEventMutate,
+        isUpdateLoading,
     };
 };
 

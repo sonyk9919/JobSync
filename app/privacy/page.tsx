@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     return (
         <main className="max-w-2xl mx-auto px-6 py-12 text-sm text-gray-700 space-y-8">
             <h1 className="text-2xl font-bold text-gray-900">개인정보처리방침</h1>
-            <p className="text-gray-500">최종 수정일: 2025년 5월 3일</p>
+            <p className="text-gray-500">최종 수정일: 2026년 5월 3일</p>
 
             <section className="space-y-2">
                 <h2 className="font-semibold text-gray-900">1. 수집하는 정보</h2>

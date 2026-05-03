@@ -12,6 +12,7 @@ import GoogleCalendarConnect from '../common/GoogleCalendarConnect';
 import useGoogleCalendarId from '@/hooks/calendar/useGoogleCalendarId';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import LoadingMessage from '@/components/common/LoadingMessage';
+import { CalendarEventWithId } from '@/types/calendar';
 
 enum ViewType {
     KANBAN = 'kanban',
@@ -20,7 +21,7 @@ enum ViewType {
 
 const BoardViewSelector = () => {
     const [view, setView] = useState<ViewType>(ViewType.KANBAN);
-    const { jobs, isLoading: isEventsLoaded } = useGoogleCalendarEvent();
+    const { events, isLoading: isEventsLoaded } = useGoogleCalendarEvent();
     const { hasCalendar, isCalendarLoaded } = useGoogleCalendarId();
     const { isLoggedIn, isLoading: isLoggedInLoading } = useGoogleAuth();
 
@@ -42,7 +43,7 @@ const BoardViewSelector = () => {
             </div>
             <BoardContent
                 view={view}
-                jobs={jobs}
+                events={events}
                 isLoggedInLoading={isLoggedInLoading}
                 isEventsLoaded={isEventsLoaded}
                 isCalendarLoaded={isCalendarLoaded}
@@ -55,7 +56,7 @@ const BoardViewSelector = () => {
 
 interface ContentProps {
     view: ViewType;
-    jobs: ParsedJob[];
+    events: CalendarEventWithId<ParsedJob>[];
     isLoggedInLoading: boolean;
     isEventsLoaded: boolean;
     isCalendarLoaded: boolean;
@@ -65,7 +66,7 @@ interface ContentProps {
 
 const BoardContent = ({
     view,
-    jobs,
+    events,
     isLoggedInLoading,
     isCalendarLoaded,
     isEventsLoaded,
@@ -77,8 +78,8 @@ const BoardContent = ({
     if (!isCalendarLoaded) return <LoadingMessage>캘린더를 불러오는 중이에요</LoadingMessage>;
     if (!hasCalendar) return <GoogleCalendarSetup />;
     if (isEventsLoaded) return <LoadingMessage>일정을 불러오는 중이에요</LoadingMessage>;
-    if (view === ViewType.KANBAN) return <KanbanBoard jobs={jobs} />;
-    return <CalendarView jobs={jobs} />;
+    if (view === ViewType.KANBAN) return <KanbanBoard events={events} />;
+    return <CalendarView events={events} />;
 };
 
 export default BoardViewSelector;

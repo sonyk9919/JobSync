@@ -1,4 +1,4 @@
-import { ReminderUnit } from '@/types/calendar';
+import { CalendarEventWithId, ReminderUnit } from '@/types/calendar';
 import { ParsedJob } from './parser/types';
 
 class DateUtils {
@@ -59,21 +59,21 @@ class DateUtils {
         return value * 60 * 24;
     };
 
-    public static groupByDday(jobs: ParsedJob[]) {
-        const d3: ParsedJob[] = [];
-        const d7: ParsedJob[] = [];
-        const d10: ParsedJob[] = [];
-        const later: ParsedJob[] = [];
+    public static groupByDday(events: CalendarEventWithId<ParsedJob>[]) {
+        const d3: CalendarEventWithId<ParsedJob>[] = [];
+        const d7: CalendarEventWithId<ParsedJob>[] = [];
+        const d10: CalendarEventWithId<ParsedJob>[] = [];
+        const later: CalendarEventWithId<ParsedJob>[] = [];
 
-        jobs.forEach((job) => {
-            const dday = DateUtils.getDday(job.dueDate);
+        events.forEach((event) => {
+            const dday = this.getDday(new Date(event.end.date));
             if (dday === null) {
                 return;
             }
-            if (dday <= 3) d3.push(job);
-            else if (dday <= 7) d7.push(job);
-            else if (dday <= 10) d10.push(job);
-            else later.push(job);
+            if (dday <= 3) d3.push(event);
+            else if (dday <= 7) d7.push(event);
+            else if (dday <= 10) d10.push(event);
+            else later.push(event);
         });
 
         return { d3, d7, d10, later };

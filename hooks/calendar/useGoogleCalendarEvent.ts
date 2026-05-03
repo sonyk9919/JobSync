@@ -5,7 +5,7 @@ import CalendarAPI from '@/api/calendar';
 const useGoogleCalendarEvent = () => {
     const { calendarId, hasCalendar } = useGoogleCalendarId();
     const {
-        data: jobs = [],
+        data: events = [],
         isLoading,
         isSuccess,
     } = useQuery({
@@ -19,7 +19,7 @@ const useGoogleCalendarEvent = () => {
         enabled: hasCalendar,
     });
 
-    return { jobs, isLoading: isLoading || !isSuccess };
+    return { events, isLoading: isLoading || !isSuccess };
 };
 
 export default useGoogleCalendarEvent;

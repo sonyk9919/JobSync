@@ -1,29 +1,28 @@
 import Button from '@/components/common/Button';
 import FormField from '@/components/common/FormField';
-import useGoogleCalendarEventMutate from '@/hooks/calendar/mutate/useGoogleCalendarEventMutate';
-import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
-import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CalendarForm, ReminderUnit } from '@/types/calendar';
 import DateUtils from '@/utils/DateUtils';
 import { Loader2, Plus, X } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
-const JobCalendarForm = () => {
-    const { addEvent, isAddLoading } = useGoogleCalendarEventMutate();
-    const { register: registerJob } = useRegisteredJobs();
+interface Props {
+    onClose: () => void;
+    isSubmitLoading: boolean;
+    actionLabel: string;
+    onSubmit: (form: CalendarForm) => Promise<void>;
+    defaultValues: CalendarForm;
+}
+
+const JobCalendarForm = ({
+    defaultValues,
+    onSubmit,
+    onClose,
+    isSubmitLoading,
+    actionLabel,
+}: Props) => {
     const reminderListRef = useRef<HTMLDivElement>(null);
-    const { job, setJob } = useJobCalendarModal();
-
-    const { register, handleSubmit, reset, control } = useForm<CalendarForm>({
-        defaultValues: {
-            title: '',
-            date: '',
-            reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
-            memo: '',
-        },
-    });
-
+    const { register, handleSubmit, control } = useForm<CalendarForm>({ defaultValues });
     const { fields, append, remove } = useFieldArray({
         name: 'reminders',
         control,
@@ -42,23 +41,6 @@ const JobCalendarForm = () => {
             });
         }, 0);
     };
-    const onSubmit = async (form: CalendarForm) => {
-        if (!job) return;
-        const registeredJob = await addEvent({ form, job });
-        registerJob(registeredJob.url);
-        setJob(null);
-    };
-
-    useEffect(() => {
-        if (!job) return;
-        reset({
-            title: `${job.company} - ${job.title}`,
-            date:
-                job.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0],
-            reminders: [{ value: 1, unit: ReminderUnit.DAYS }],
-            memo: job.url,
-        });
-    }, [job, reset]);
 
     return (
         <div className="flex flex-col gap-2">
@@ -154,11 +136,15 @@ const JobCalendarForm = () => {
             </div>
 
             <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-                <Button variant="secondary" onClick={() => setJob(null)}>
+                <Button variant="secondary" onClick={onClose}>
                     취소
                 </Button>
-                <Button variant="primary" disabled={isAddLoading} onClick={handleSubmit(onSubmit)}>
-                    {isAddLoading ? <Loader2 className="size-4 animate-spin" /> : '추가'}
+                <Button
+                    variant="primary"
+                    disabled={isSubmitLoading}
+                    onClick={handleSubmit(onSubmit)}
+                >
+                    {isSubmitLoading ? <Loader2 className="size-4 animate-spin" /> : actionLabel}
                 </Button>
             </div>
         </div>

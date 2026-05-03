@@ -1,14 +1,15 @@
+import { CalendarEventWithId } from '@/types/calendar';
 import { cn } from '@/utils/css/tailwind';
 import { ParsedJob } from '@/utils/parser/types';
 
 interface Props {
     date: Date | null;
-    jobs: ParsedJob[];
+    events: CalendarEventWithId<ParsedJob>[];
     isCurrentMonth: boolean;
     onClick: () => void;
 }
 
-const CalendarCell = ({ date, jobs, isCurrentMonth, onClick }: Props) => {
+const CalendarCell = ({ date, events, isCurrentMonth, onClick }: Props) => {
     const isToday = date?.toDateString() === new Date().toDateString();
 
     return (
@@ -27,13 +28,15 @@ const CalendarCell = ({ date, jobs, isCurrentMonth, onClick }: Props) => {
             >
                 {date?.getDate()}
             </span>
-            {jobs.slice(0, 2).map((job, i) => (
+            {events.slice(0, 2).map((event, i) => (
                 <span key={i} className="text-xs px-1 rounded bg-blue-50 text-blue-400 truncate">
-                    {job.company}
+                    {event.extendedProperties.private.origin.company}
                 </span>
             ))}
-            {jobs.length > 2 && (
-                <span className="text-xs text-gray-400 font-medium">+ {jobs.length - 2}개 더</span>
+            {events.length > 2 && (
+                <span className="text-xs text-gray-400 font-medium">
+                    + {events.length - 2}개 더
+                </span>
             )}
         </div>
     );

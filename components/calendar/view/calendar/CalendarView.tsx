@@ -5,33 +5,40 @@ import CalendarHeader from './CalendarHeader';
 import CalendarGrid from './CalendarGrid';
 import CalendarJobViewModal from '../../modal/calendar-job-view/CalendarJobViewModal';
 import { ParsedJob } from '@/utils/parser/types';
+import { CalendarEventWithId } from '@/types/calendar';
 
 interface Props {
-    jobs: ParsedJob[];
+    events: CalendarEventWithId<ParsedJob>[];
 }
 
-const CalendarView = ({ jobs }: Props) => {
+const CalendarView = ({ events }: Props) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-    const selectedJobs = selectedDate
-        ? jobs.filter(
-              (job) =>
-                  job.dueDate?.getFullYear() === selectedDate.getFullYear() &&
-                  job.dueDate?.getMonth() === selectedDate.getMonth() &&
-                  job.dueDate?.getDate() === selectedDate.getDate()
-          )
+    const selectedEvents = selectedDate
+        ? events.filter((event) => {
+              const date = new Date(event.end.date);
+              return (
+                  date.getFullYear() === selectedDate.getFullYear() &&
+                  date.getMonth() === selectedDate.getMonth() &&
+                  date.getDate() === selectedDate.getDate()
+              );
+          })
         : [];
 
     return (
         <div className="flex flex-col gap-4 w-full md:w-300 max-w-full">
             <CalendarHeader currentDate={currentDate} onChange={setCurrentDate} />
-            <CalendarGrid currentDate={currentDate} jobs={jobs} onSelectDate={setSelectedDate} />
+            <CalendarGrid
+                currentDate={currentDate}
+                events={events}
+                onSelectDate={setSelectedDate}
+            />
             {selectedDate && (
                 <CalendarJobViewModal
                     isOpen={!!selectedDate}
                     date={selectedDate}
-                    jobs={selectedJobs}
+                    events={selectedEvents}
                     onClose={() => setSelectedDate(null)}
                 />
             )}

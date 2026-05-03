@@ -19,8 +19,8 @@ const JobCalendarAction = ({ selectedJobs }: ActionAreaProps) => {
     const { hasCalendar, isCalendarLoaded } = useGoogleCalendarId();
 
     const handleAddAll = async () => {
-        const registerdJobs = await addEvents(selectedJobs);
-        registerAll(registerdJobs.map((j) => j.url));
+        const events = await addEvents(selectedJobs);
+        registerAll(events.map((e) => e.extendedProperties.private.origin.url));
     };
 
     if (!isLoggedIn()) {

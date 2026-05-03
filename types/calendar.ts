@@ -18,10 +18,14 @@ export interface CalendarCreateBody {
 }
 
 export interface CalendarEventResponse {
-    items: CalendarEvent[];
+    items: CalendarEventWithId[];
 }
 
-export interface CalendarEvent {
+export interface CalendarEventWithId<T = string> extends CalendarEvent<T> {
+    id: string;
+}
+
+export interface CalendarEvent<T = string> {
     summary: string;
     start: { date: string };
     end: { date: string };
@@ -30,10 +34,9 @@ export interface CalendarEvent {
         useDefault: boolean;
         overrides: { method: ReminderMethod; minutes: number }[];
     };
-    extendedProperties?: {
+    extendedProperties: {
         private: {
-            origin: string;
-            [key: string]: string;
+            origin: T;
         };
     };
 }

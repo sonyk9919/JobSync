@@ -1,13 +1,35 @@
 import {
     CalendarCreate,
     CalendarCreateBody,
-    CalendarEvent,
     CalendarEventResponse,
+    CalendarEventWithId,
+    CalendarForm,
     CalendarList,
+    ReminderMethod,
 } from '@/types/calendar';
 import calendarAxios from './calendar-axios';
 import { CALENDAR_NAME } from '@/hooks/calendar/useGoogleCalendarId';
 import { ParsedJob, ParsedJobSchema } from '@/utils/parser/types';
+import DateUtils from '@/utils/DateUtils';
+
+const buildEvent = (form: CalendarForm, job: ParsedJob) => ({
+    summary: form.title,
+    start: { date: form.date },
+    end: { date: form.date },
+    description: form.memo,
+    reminders: {
+        useDefault: false,
+        overrides: form.reminders.map((r) => ({
+            method: ReminderMethod.POPUP,
+            minutes: DateUtils.toMinutes(r.value, r.unit),
+        })),
+    },
+    extendedProperties: {
+        private: {
+            origin: JSON.stringify(job),
+        },
+    },
+});
 
 const CalendarAPI = {
     getCalendarId: async () => {
@@ -19,8 +41,31 @@ const CalendarAPI = {
         const result = await calendarAxios.post<CalendarCreate>('/calendars', body);
         return result.data.id;
     },
-    addEvent: async (calendarId: string, event: CalendarEvent) => {
-        await calendarAxios.post(`/calendars/${encodeURIComponent(calendarId)}/events`, event);
+    addEvent: async (calendarId: string, form: CalendarForm, job: ParsedJob) => {
+        const result = await calendarAxios.post<CalendarEventWithId>(
+            `/calendars/${encodeURIComponent(calendarId)}/events`,
+            buildEvent(form, job),
+        );
+        return {
+            ...result.data,
+            extendedProperties: {
+                private: {
+                    origin: ParsedJobSchema.parse(
+                                    JSON.parse(result.data.extendedProperties.private.origin)
+                                ),
+                }
+            }
+        }
+    },
+    updateEvent: async (
+        calendarId: string,
+        form: CalendarForm,
+        event: CalendarEventWithId<ParsedJob>
+    ) => {
+        await calendarAxios.patch(
+            `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(event.id)}`,
+            buildEvent(form, event.extendedProperties.private.origin)
+        );
     },
     getEvents: async (calendarId: string) => {
         const now = new Date().toISOString();
@@ -37,19 +82,27 @@ const CalendarAPI = {
         );
         return (result.data.items || [])
             .map((event) => {
-                if (!event.extendedProperties?.private) {
+                if (!event.extendedProperties.private) {
                     console.error(`${event.summary} 일정은 원본 정보가 없습니다.`);
                     return null;
                 }
                 try {
-                    return ParsedJobSchema.parse(
-                        JSON.parse(event.extendedProperties.private.origin)
-                    );
+                    return {
+                        ...event,
+                        extendedProperties: {
+                            private: {
+                                origin: ParsedJobSchema.parse(
+                                    JSON.parse(event.extendedProperties.private.origin)
+                                ),
+                            },
+                        },
+                    };
                 } catch (e) {
                     console.error('타입 검증에 실패했습니다.', event.summary, e);
+                    return null;
                 }
             })
-            .filter((job): job is ParsedJob => job != null);
+            .filter((event): event is CalendarEventWithId<ParsedJob> => event != null);
     },
 };
 

@@ -1,13 +1,16 @@
+import { CalendarEventWithId } from '@/types/calendar';
 import DateUtils from '@/utils/DateUtils';
 import { CareerType, EducationType, ParsedJob } from '@/utils/parser/types';
 import { ExternalLink } from 'lucide-react';
 
 interface Props {
-    job: ParsedJob;
+    event: CalendarEventWithId<ParsedJob>;
 }
 
-const KanbanCard = ({ job }: Props) => {
-    const dday = DateUtils.getDday(job.dueDate);
+const KanbanCard = ({ event }: Props) => {
+    const dueDate = new Date(event.end.date);
+    const dday = DateUtils.getDday(dueDate);
+    const job = event.extendedProperties.private.origin;
 
     const onOpenUrl = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -46,9 +49,12 @@ const KanbanCard = ({ job }: Props) => {
             </div>
             <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-400">
-                    {job.dueDate?.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
+                    {dueDate.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
                 </span>
-                <button className="text-gray-300 hover:text-blue-400 duration-150">
+                <button
+                    onClick={onOpenUrl}
+                    className="text-gray-300 hover:text-blue-400 duration-150"
+                >
                     <ExternalLink className="size-3.5" />
                 </button>
             </div>
