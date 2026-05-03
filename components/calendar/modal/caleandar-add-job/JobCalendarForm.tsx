@@ -1,6 +1,6 @@
 import Button from '@/components/common/Button';
 import FormField from '@/components/common/FormField';
-import useGoogleCalendarEvent from '@/hooks/calendar/useGoogleCalendarEvent';
+import useGoogleCalendarEventMutate from '@/hooks/calendar/mutate/useGoogleCalendarEventMutate';
 import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
 import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CalendarForm, ReminderUnit } from '@/types/calendar';
@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 const JobCalendarForm = () => {
-    const { addEvent, isAddLoading } = useGoogleCalendarEvent();
+    const { addEvent, isAddLoading } = useGoogleCalendarEventMutate();
     const { register: registerJob } = useRegisteredJobs();
     const reminderListRef = useRef<HTMLDivElement>(null);
     const { job, setJob } = useJobCalendarModal();

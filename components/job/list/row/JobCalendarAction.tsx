@@ -1,7 +1,7 @@
 import Button from '@/components/common/Button';
 import GoogleAuthButton from '@/components/common/GoogleAuthButton';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
-import useGoogleCalendarEvent from '@/hooks/calendar/useGoogleCalendarEvent';
+import useGoogleCalendarEventMutate from '@/hooks/calendar/mutate/useGoogleCalendarEventMutate';
 import useGoogleCalendarId from '@/hooks/calendar/useGoogleCalendarId';
 import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { ParsedJob } from '@/utils/parser/types';
@@ -14,7 +14,7 @@ interface ActionAreaProps {
 const JobCalendarAction = ({ selectedJobs }: ActionAreaProps) => {
     const { isLoggedIn } = useGoogleAuth();
     const { registerAll } = useRegisteredJobs();
-    const { addEvents, isAddAllLoading } = useGoogleCalendarEvent();
+    const { addEvents, isAddAllLoading } = useGoogleCalendarEventMutate();
     const { createCalendar, isCreateLoading } = useGoogleCalendarId();
     const { hasCalendar, isCalendarLoaded } = useGoogleCalendarId();
 
