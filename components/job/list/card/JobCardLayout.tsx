@@ -1,6 +1,6 @@
 import { ParsedJob } from '@/utils/parser/types';
 import JobCard from './JobCard';
-import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
+import useJobCalendarModal from '@/hooks/store/useCalendarAddModal';
 
 interface Props {
     jobs: ParsedJob[];

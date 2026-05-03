@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import CalendarHeader from './CalendarHeader';
 import CalendarGrid from './CalendarGrid';
-import CalendarJobViewModal from '../../modal/calendar-job-view/CalendarJobViewModal';
+import CalendarJobViewModal from '../../modal/calendar-job/CalendarJobViewModal';
 import { ParsedJob } from '@/utils/parser/types';
 import { CalendarEventWithId } from '@/types/calendar';
 

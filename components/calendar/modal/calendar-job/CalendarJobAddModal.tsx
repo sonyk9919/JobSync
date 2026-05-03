@@ -1,4 +1,4 @@
-import useJobCalendarModal from '@/hooks/store/useJobCalendarModal';
+import useCalendarAddModal from '@/hooks/store/useCalendarAddModal';
 import useGoogleAuth from '@/hooks/auth/useGoogleAuth';
 import GoogleCalendarConnect from '@/components/calendar/common/GoogleCalendarConnect';
 import JobCalendarContent from '../../common/JobCalendarContent';
@@ -7,8 +7,8 @@ import useGoogleCalendarEventMutate from '@/hooks/calendar/mutate/useGoogleCalen
 import useRegisteredJobs from '@/hooks/store/useRegisteredJobs';
 import { CalendarForm } from '@/types/calendar';
 
-const JobCalendarModal = () => {
-    const { job, setJob } = useJobCalendarModal();
+const CalendarJobAddModal = () => {
+    const { job, setJob } = useCalendarAddModal();
     const { isLoggedIn } = useGoogleAuth();
     const { addEvent, isAddLoading } = useGoogleCalendarEventMutate();
     const { register } = useRegisteredJobs();
@@ -39,4 +39,4 @@ const JobCalendarModal = () => {
     );
 };
 
-export default JobCalendarModal;
+export default CalendarJobAddModal;

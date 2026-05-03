@@ -1,6 +1,6 @@
 import { ParsedJob } from '@/utils/parser/types';
 
-export interface JobCalendarModal {
+export interface CalendarAddModal {
     job: ParsedJob | null;
     setJob: (job: ParsedJob | null) => void;
 }
