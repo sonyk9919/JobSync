@@ -3,7 +3,7 @@ interface Props {
 }
 
 const PageContainer = ({ children }: Props) => {
-    return <div className="pt-10 h-dvh">{children}</div>;
+    return <div className="pt-6 h-[calc(100dvh-3rem)]">{children}</div>;
 };
 
 export default PageContainer;
