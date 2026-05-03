@@ -1,10 +1,10 @@
-import KanbanBoard from '@/components/calendar/view/kanban/KanbanList';
+import CalendarView from '@/components/calendar/view/calendar/CalendarView';
 import PageContainer from '@/components/common/PageContainter';
 
 export default function Home() {
     return (
         <PageContainer>
-            <KanbanBoard />
+            <CalendarView />
         </PageContainer>
     );
 }

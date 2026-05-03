@@ -2,6 +2,8 @@ import { ReminderUnit } from '@/types/calendar';
 import { ParsedJob } from './parser/types';
 
 class DateUtils {
+    public static DAY_HEADERS = ['일', '월', '화', '수', '목', '금', '토'];
+
     private static getAlertDate(date: string, value: number, unit: ReminderUnit): Date {
         const base = new Date(date);
         base.setHours(0, 0, 0, 0);
@@ -78,6 +80,20 @@ class DateUtils {
         });
 
         return { d3, d7, d10, later };
+    }
+
+    public static getCalendarCells(date: Date): (Date | null)[] {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        const cells: (Date | null)[] = Array(firstDay).fill(null);
+        for (let d = 1; d <= lastDate; d++) {
+            cells.push(new Date(year, month, d));
+        }
+        while (cells.length % 7 !== 0) cells.push(null);
+        return cells;
     }
 }
 

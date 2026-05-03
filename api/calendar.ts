@@ -42,7 +42,6 @@ const CalendarAPI = {
                     return null;
                 }
                 try {
-                    console.log(event.extendedProperties.private.origin);
                     return ParsedJobSchema.parse(
                         JSON.parse(event.extendedProperties.private.origin)
                     );
