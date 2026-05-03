@@ -21,7 +21,7 @@
         "paths": {
             "@/*": ["./*"]
         },
-        "types": ["google.accounts"]
+        "types": ["google.accounts", "vitest/globals"]
     },
     "include": [
         "next-env.d.ts",
