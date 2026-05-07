@@ -1,6 +1,6 @@
 # JobSync
 
-**배포 주소**: https://job-sync-o8xyknace-sonyk9919s-projects.vercel.app
+**배포 주소**: https://job-sync-five.vercel.app
 
 공고의 채용 마감일을 수동으로 캘린더에 등록하다가 불편해서 자동화했습니다.
 
