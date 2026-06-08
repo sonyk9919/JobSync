@@ -83,7 +83,8 @@ const CalendarAPI = {
         };
     },
     getEvents: async (calendarId: string) => {
-        const now = new Date().toISOString();
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
         const result = await calendarAxios.get<CalendarEventResponse>(
             `/calendars/${encodeURIComponent(calendarId)}/events`,
             {
@@ -91,7 +92,7 @@ const CalendarAPI = {
                     maxResults: 2500,
                     singleEvents: true,
                     orderBy: 'startTime',
-                    timeMin: now,
+                    timeMin: oneMonthAgo.toISOString(),
                 },
             }
         );

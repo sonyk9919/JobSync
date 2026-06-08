@@ -71,11 +71,13 @@ class DateUtils {
         const d7: CalendarEventWithId<ParsedJob>[] = [];
         const d10: CalendarEventWithId<ParsedJob>[] = [];
         const later: CalendarEventWithId<ParsedJob>[] = [];
+        const closed: CalendarEventWithId<ParsedJob>[] = [];
 
         events.forEach((event) => {
             const dday = this.getDday(new Date(event.end.date));
             if (dday === null) return;
-            if (dday <= 3) d3.push(event);
+            if (dday < 0) closed.push(event);
+            else if (dday <= 3) d3.push(event);
             else if (dday <= 7) d7.push(event);
             else if (dday <= 10) d10.push(event);
             else later.push(event);
@@ -89,6 +91,7 @@ class DateUtils {
             d7: d7.sort(sortByDday),
             d10: d10.sort(sortByDday),
             later: later.sort(sortByDday),
+            closed: closed.sort(sortByDday),
         };
     }
 

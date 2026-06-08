@@ -8,9 +8,10 @@ import { ExternalLink } from 'lucide-react';
 
 interface Props {
     event: CalendarEventWithId<ParsedJob>;
+    muted?: boolean;
 }
 
-const KanbanCard = ({ event }: Props) => {
+const KanbanCard = ({ event, muted }: Props) => {
     const { setEvent } = useCalendarEditModal();
     const dueDate = new Date(event.end.date);
     const dday = DateUtils.getDday(dueDate);
@@ -24,7 +25,7 @@ const KanbanCard = ({ event }: Props) => {
     return (
         <div
             onClick={() => setEvent(event)}
-            className="cursor-pointer bg-white border border-gray-100 rounded-xl p-3 md:p-4 flex flex-col gap-2 hover:border-blue-100 hover:shadow-sm transition-all duration-200"
+            className={`cursor-pointer bg-white border border-gray-100 rounded-xl p-3 md:p-4 flex flex-col gap-2 hover:border-blue-100 hover:shadow-sm transition-all duration-200 ${muted ? 'opacity-40' : ''}`}
         >
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">

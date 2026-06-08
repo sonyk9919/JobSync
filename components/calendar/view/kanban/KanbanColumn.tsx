@@ -5,13 +5,18 @@ import { CalendarEventWithId } from '@/types/calendar';
 interface Props {
     title: string;
     events: CalendarEventWithId<ParsedJob>[];
+    muted?: boolean;
 }
 
-const KanbanColumn = ({ title, events }: Props) => {
+const KanbanColumn = ({ title, events, muted }: Props) => {
     return (
         <div className="flex flex-col gap-2 w-64 md:w-72 shrink-0 snap-center">
             <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-medium text-gray-500">{title}</span>
+                <span
+                    className={`text-xs font-medium ${muted ? 'text-gray-300' : 'text-gray-500'}`}
+                >
+                    {title}
+                </span>
                 <span className="text-xs text-gray-300">{events.length}</span>
             </div>
             <div className="flex flex-col gap-2 overflow-y-auto scrollbar-hide">
@@ -20,7 +25,7 @@ const KanbanColumn = ({ title, events }: Props) => {
                         공고가 없어요
                     </div>
                 ) : (
-                    events.map((event) => <KanbanCard key={event.id} event={event} />)
+                    events.map((event) => <KanbanCard key={event.id} event={event} muted={muted} />)
                 )}
             </div>
         </div>
