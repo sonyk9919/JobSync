@@ -10,7 +10,7 @@ interface Props {
 
 const KanbanColumn = ({ title, events, muted }: Props) => {
     return (
-        <div className="flex flex-col gap-2 w-64 md:w-72 shrink-0 snap-center">
+        <div className="flex flex-col gap-2 w-64 md:w-72 shrink-0 snap-start">
             <div className="flex items-center justify-between px-1">
                 <span
                     className={`text-xs font-medium ${muted ? 'text-gray-300' : 'text-gray-500'}`}
